@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Game</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const socket = io();
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let players = {};
+
+
+        socket.on('updatePlayers', (updatedPlayers) => {
+            players = updatedPlayers;
+        });
+
+
+
+        // draw loop
+        function drawPlayers() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const id in players) {
+                const player = players[id];
+
+                // body
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(player.x, player.y, 20, 20);
+
+                // sword
+                const angle = player.angle || 0;
+                const cx = player.x + 10;
+                const cy = player.y + 10;
+                const swordRadius = 25;
+
+                const swordX = cx + Math.cos(angle) * swordRadius;
+                const swordY = cy + Math.sin(angle) * swordRadius;
+
+                ctx.save();
+                ctx.translate(swordX, swordY);
+                ctx.rotate(angle);
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(-2, -3, 25, 5);
+                ctx.restore();
+            }
+            requestAnimationFrame(drawPlayers);
+        }
+        drawPlayers();
+
+        // show kill message
+        socket.on('playerKill', ({ killer, victim }) => {
+            const msg = document.createElement('div');
+            msg.textContent = `Player ${killer.slice(0, 4)} killed ${victim.slice(0, 4)}`;
+            msg.className = 'kill-message';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        });
+
+        // movement
+        window.addEventListener('keydown', (e) => {
+            const moves = {
+                ArrowUp: { x: 0, y: -10 },
+                ArrowDown: { x: 0, y: 10 },
+                ArrowLeft: { x: -10, y: 0 },
+                ArrowRight: { x: 10, y: 0 },
+                w: { x: 0, y: -10 },
+                s: { x: 0, y: 10 },
+                a: { x: -10, y: 0 },
+                d: { x: 10, y: 0 }
+            };
+            if (moves[e.key]) socket.emit('move', moves[e.key]);
+        });
+
+        // aiming
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const localX = e.clientX - rect.left;
+            const localY = e.clientY - rect.top;
+
+            const me = players[socket.id];
+            if (!me) return;
+
+            const dx = localX - (me.x + 10);
+            const dy = localY - (me.y + 10);
+            const angle = Math.atan2(dy, dx);
+
+            socket.emit('aim', angle);
+        });
+    </script>
+
+</body>
+
+</html>
