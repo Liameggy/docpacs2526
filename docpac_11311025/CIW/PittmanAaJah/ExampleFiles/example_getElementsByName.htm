@@ -1,0 +1,36 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Example: getElementsByName</title>
+
+   <script type="text/javascript">
+   <!--
+    function getValues(objName)
+    {  
+        var arr = new Array();
+        arr = document.getElementsByName(objName);
+        alert("Total objects with name \"txtField\" = \n" + arr.length);
+            for(var i = 0; i < arr.length; i++)
+            {
+				var obj = document.getElementsByName(objName).item(i);
+				alert(obj.id + " =  " + obj.value);
+            }
+    }
+    -->
+    </script>
+</head>
+
+<body>
+<h3>CIW JavaScript Specialist</h3>
+<hr />
+Text1:
+<input id="Text1" name="txtField" type="text" value="CIW" /><br />
+Text2:
+<input id="Text2" name="txtField" type="text" value="CERTIFICATION" /><br />
+Text3:
+<input id="Text3" name="txtField" type="text" value="RULES" /><br />
+<p>
+<input id="Button1" type="button" value="Get Elements Named txtField" onclick="getValues('txtField')" /></p>
+</body>
+</html>

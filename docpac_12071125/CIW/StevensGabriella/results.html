@@ -1,0 +1,106 @@
+<!-- An extension of the application project. Similar principles apply -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quiz Results</title>
+    <style>
+        body { margin: 20px; font-family: sans-serif; }
+        .box { max-width: 800px; }
+        .percent { font-size: 2.2rem; font-weight: bold; margin-top: 8px; }
+        .details { margin-top: 6px; }
+        .question { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 12px; }
+        .wrong { color: crimson; }
+        .correct { color: green; }
+        button { margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Your Quiz Results</h1>
+        <div id="message">Loading results…</div>
+        <div class="percent" id="percent"></div>
+        <div class="details" id="details"></div>
+
+        <div id="questionsList"></div>
+
+        <button id="retry">Back to Quiz</button>
+    </div>
+
+    <script>
+        const msg = document.getElementById('message');
+        const percentEl = document.getElementById('percent');
+        const detailsEl = document.getElementById('details');
+        const questionsList = document.getElementById('questionsList');
+        const retry = document.getElementById('retry');
+
+        
+        let data = null;
+        try {
+            //This code retrieves the quiz results from session storage
+            const raw = sessionStorage.getItem('quizResult');
+            data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            console.error('Failed to read results:', e);
+        }
+
+        if (!data) {
+            //Checks if the data arrived or is missing
+            msg.textContent = 'No results found. Please take the quiz first.';
+            percentEl.textContent = '';
+            detailsEl.textContent = '';
+        } else {
+            //Displays the score and percentage
+            msg.textContent = 'Here is your score:';
+            percentEl.textContent = `${data.percentage}%`;
+            detailsEl.textContent = `${data.score} out of ${data.total} correct.`;
+
+            //This code lists each question and shows correct answer for incorrect ones
+            questionsList.innerHTML = '';
+            data.questions.forEach((q, idx) => {
+                //Creates a container for each question and its details
+                const container = document.createElement('div');
+                container.className = 'question';
+                const title = document.createElement('div');
+                title.textContent = `${idx + 1}. ${q.question}`;
+                container.appendChild(title);
+
+                //Shows the user's answer
+                const userAnswer = document.createElement('div');
+                userAnswer.innerHTML = `<strong>Your answer:</strong> ${q.selected}`;
+                container.appendChild(userAnswer);
+
+                //If the answer was wrong, show the correct answer
+                //Else, just write "Correct"
+                if (!q.correctChosen) {
+                    const correctAnswer = document.createElement('div');
+                    correctAnswer.className = 'wrong';
+                    correctAnswer.innerHTML = `<strong>Correct answer:</strong> ${q.correct}`;
+                    container.appendChild(correctAnswer);
+                } else {
+                    const ok = document.createElement('div');
+                    ok.className = 'correct';
+                    ok.textContent = 'Correct';
+                    container.appendChild(ok);
+                }
+
+                questionsList.appendChild(container);
+            });
+        }
+
+        //Button to go back to the quiz and information page
+        retry.addEventListener('click', () => {
+            window.location.href = 'ApplicationProject.html';
+        });
+    </script>
+</body>
+</html>

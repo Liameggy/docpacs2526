@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Game</title>
+    <link rel="stylesheet" href="/styles/index.css">
+</head>
+<body>
+    <form action="/login">
+        <button>Login</button>
+    </form>
+    <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+    </form>
+    <br><br>
+    <div id="loginInfo">Logged in as <%- user -%></div>
+    <br>
+    <button onclick="window.location.href='/game';">Game</button>
+</body>
+</html>

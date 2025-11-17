@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lesson 8 Application Project</title>
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+
+	<script>
+		
+		const emptyObject = {};
+
+
+
+	</script>
+
+	<script>
+		
+		const person = {
+			firstName: "Chris",
+			lastName: "Smith",
+			age: 30,
+			fullName: function () {
+				return this.firstName + " " + this.lastName;
+			}
+		};
+
+
+
+	</script>
+
+	<script>
+		
+		function personThing(first, last, age) {
+			this.firstName = first;
+			this.lastName = last;
+			this.age = age;
+			this.fullName = function () {
+				return this.firstName + " " + this.lastName;
+			};
+		}
+
+
+
+		
+		const people = [
+			new personThing("Alice", "Johnson", 28),
+			new personThing("Bob", "Brown", 35),
+			new personThing("Charlie", "Davis", 22)
+		];
+
+
+	</script>
+
+	<script>
+		
+		function displayPeople() {
+			let output = "<ul>";
+			for (let i = 0; i < people.length; i++) {
+				output += "<li>" + people[i].fullName() + ", Age: " + people[i].age + "</li>";
+			}
+			output += "</ul>";
+			document.getElementById("peopleList").innerHTML = output;
+		}
+	</script>
+
+	<h3>Please click on this button to... Remember to create a button for this!</h3><br>
+
+
+	<script>
+		
+		document.addEventListener("DOMContentLoaded", function () {
+			const button = document.createElement("button");
+			button.textContent = "Display People";
+			button.onclick = displayPeople;
+			document.body.appendChild(button);
+
+			const peopleListDiv = document.createElement("div");
+			peopleListDiv.id = "peopleList";
+			document.body.appendChild(peopleListDiv);
+		});
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="controls">Control Method: Keyboard</div>
+    <canvas width="1400" height="700"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to server with ID:', socket.id);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        let myPlayer = null;
+        let myAvatar = null;
+        let gameLoopStarted = false;
+
+        socket.on('assignPlayer', (data) => {
+            console.log("Received assignPlayer event:", data);
+            myPlayer = data.player;
+
+            if (myPlayer === 'avatar') {
+                myAvatar = avatar;
+                console.log("Assigned to avatar:", myAvatar);
+            } else if (myPlayer === 'avatar2') {
+                myAvatar = avatar2;
+                console.log("Assigned to avatar2:", myAvatar);
+            }
+
+            if (!gameLoopStarted) {
+                gameLoopStarted = true;
+                requestAnimationFrame(gameLoop);
+            }
+        });
+
+        const avatar = {
+            x: 314,
+            y: 366,
+            w: 50,
+            h: 50,
+            img: new Image(),
+            playerSpeed: 1,
+            velocityX: 0,
+            velocityY: 0,
+            minVelocity: -5,
+            maxVelocity: 5,
+            deadPork: false
+        }
+
+        const avatar2 = {
+            x: 720,
+            y: 366,
+            w: 50,
+            h: 50,
+            img: new Image(),
+            playerSpeed: 1,
+            velocityX: 0,
+            velocityY: 0,
+            minVelocity: -5,
+            maxVelocity: 5,
+            deadPork: false
+        }
+
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+
+        var inputVertical = 0;
+        var inputHorizontal = 0;
+        var keyWDown = false;
+        var keyADown = false;
+        var keySDown = false;
+        var keyDDown = false;
+
+        avatar.img.src = 'Hog.png';
+        avatar2.img.src = 'DeadHog.png';
+
+        document.addEventListener('keydown', (key) => {
+            switch (key.key) {
+                case 'w':
+                    inputVertical = -1;
+                    keyWDown = true;
+                    break;
+                case 'a':
+                    inputHorizontal = -1;
+                    keyADown = true;
+                    break;
+                case 's':
+                    inputVertical = 1;
+                    keySDown = true;
+                    break;
+                case 'd':
+                    inputHorizontal = 1;
+                    keyDDown = true;
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', (key) => {
+            switch (key.key) {
+                case 'w':
+                    keyWDown = false;
+                    break;
+                case 'a':
+                    keyADown = false;
+                    break;
+                case 's':
+                    keySDown = false;
+                    break;
+                case 'd':
+                    keyDDown = false;
+                    break;
+            }
+        });
+
+
+        function update() {
+
+            if (keyWDown || keySDown) {
+                myAvatar.velocityY += 0.2 * inputVertical
+            }
+            if (keyADown || keyDDown) {
+                myAvatar.velocityX += 0.2 * inputHorizontal
+            }
+            if (!keyWDown && !keySDown) {
+                if (myAvatar.velocityY > 0.1) {
+                    myAvatar.velocityY -= 0.1
+                } else if (myAvatar.velocityY < -0.1) {
+                    myAvatar.velocityY += 0.1
+                } else {
+                    myAvatar.velocityY = 0
+                }
+            }
+            if (!keyADown && !keyDDown) {
+                if (myAvatar.velocityX > 0.1) {
+                    myAvatar.velocityX -= 0.1
+                } else if (myAvatar.velocityX < -0.1) {
+                    myAvatar.velocityX += 0.1
+                } else {
+                    myAvatar.velocityX = 0
+                }
+            }
+            if (myAvatar.velocityX < myAvatar.minVelocity) {
+                myAvatar.velocityX = myAvatar.minVelocity;
+            } else if (myAvatar.velocityX > myAvatar.maxVelocity) {
+                myAvatar.velocityX = myAvatar.maxVelocity;
+            }
+            if (myAvatar.velocityY < myAvatar.minVelocity) {
+                myAvatar.velocityY = myAvatar.minVelocity;
+            } else if (myAvatar.velocityY > myAvatar.maxVelocity) {
+                myAvatar.velocityY = myAvatar.maxVelocity;
+            }
+            myAvatar.x += myAvatar.playerSpeed * myAvatar.velocityX;
+            myAvatar.y += myAvatar.playerSpeed * myAvatar.velocityY;
+
+            socket.emit('move', {
+                player: myPlayer,
+                dx: myAvatar.velocityX * myAvatar.playerSpeed,
+                dy: myAvatar.velocityY * myAvatar.playerSpeed,
+                velocityX: myAvatar.velocityX,
+                velocityY: myAvatar.velocityY
+            });
+
+            if (myAvatar.x < 0 || myAvatar.y < 0 ||
+                myAvatar.x + myAvatar.w > canvas.width ||
+                myAvatar.y + myAvatar.h > canvas.height) {
+
+                console.log(`${myPlayer} is out of bounds at:`, myAvatar.x, myAvatar.y);
+
+                if (!myAvatar.deadPork) {
+                    myAvatar.deadPork = true;
+                    socket.emit('playerDied', { player: myPlayer });
+                }
+            }
+
+            ctx.fillStyle = 'pink';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (!avatar.deadPork) {
+                ctx.drawImage(avatar.img, avatar.x, avatar.y, avatar.w, avatar.h);
+            }
+            if (!avatar2.deadPork) {
+                ctx.drawImage(avatar2.img, avatar2.x, avatar2.y, avatar2.w, avatar2.h);
+            }
+        }
+
+        socket.on('collisionResponse', (data) => {
+
+            avatar.x = data.positions.avatar.x;
+            avatar.y = data.positions.avatar.y;
+            avatar2.x = data.positions.avatar2.x;
+            avatar2.y = data.positions.avatar2.y;
+
+            if (data.victim === myPlayer) {
+                const otherAvatar = (myPlayer === 'avatar') ? avatar2 : avatar;
+                const dx = (myAvatar.x + myAvatar.w / 2) - (otherAvatar.x + otherAvatar.w / 2);
+                const dy = (myAvatar.y + myAvatar.h / 2) - (otherAvatar.y + otherAvatar.h / 2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const knockbackForce = 3;
+
+                myAvatar.velocityX = (dx / distance) * knockbackForce;
+                myAvatar.velocityY = (dy / distance) * knockbackForce;
+            }
+        });
+
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        socket.on('playerDeathUpdate', (data) => {
+
+            if (data.player === 'avatar') {
+                avatar.deadPork = data.deadPork;
+            } else if (data.player === 'avatar2') {
+                avatar2.deadPork = data.deadPork;
+            }
+        });
+
+        socket.on('update', (playersData) => {
+            if (playersData.avatar) {
+                avatar.x = playersData.avatar.x;
+                avatar.y = playersData.avatar.y;
+                avatar.deadPork = false;
+            }
+            if (playersData.avatar2) {
+                avatar2.x = playersData.avatar2.x;
+                avatar2.y = playersData.avatar2.y;
+                avatar2.deadPork = false;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

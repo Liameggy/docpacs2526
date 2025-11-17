@@ -1,6 +1,7 @@
 # Node.js
 **/node_modules/
 ~*.docx
+*.env
 
 # Logs
 logs

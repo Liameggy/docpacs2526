@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lab 9-1</title>
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+	<form id="favoriteForm">
+		<p>Please select your favorite type of website:</p>
+		<label>
+			<input id="radiobuttonWebdev" type="radio" name="group1" value="Web_Development" checked>
+			Web Development
+		</label><br>
+		<label>
+			<input id="radiobuttonGovernment" type="radio" name="group1" value="Government">
+			U.S. Government
+		</label><br>
+		<label>
+			<input id="a" type="radio" name="group1" value="Google">
+			Google
+		</label><br>
+		<label>
+			<input id="b" type="radio" name="group1" value="Magic_School">
+			Magic School
+		</label><br>
+		<label>
+			<input id="c" type="radio" name="group1" value="York_Tech">
+			York Tech
+		</label><br>
+
+		<button type="button" id="changeButton">Click Here</button>
+	</form>
+
+	<script>
+		const form = document.getElementById('favoriteForm');
+		const button = document.getElementById('changeButton');
+
+		button.addEventListener('click', () => {
+			const selected = form.querySelector('input[name="group1"]:checked');
+			if (!selected) return;
+
+			const value = selected.value;
+
+			// Redirect based on value
+			if (value === 'Web_Development') {
+				window.location.href = 'http://www.CIWcertified.com/';
+			} else if (value === 'Government') {
+				window.location.href = 'http://www.whitehouse.gov/';
+			} else if (value === 'Google') {
+				window.location.href = 'https://www.google.com/';
+			} else if (value === 'Magic_School') {
+				window.location.href = 'https://www.magicschool.ai/';
+			} else if (value === 'York_Tech') {
+				window.location.href = 'https://www.ytech.edu/';
+			}
+		});
+	</script>
+
+</body>
+
+</html>

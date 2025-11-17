@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchmaking</title>
+    <Style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        input {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border: 3px solid #6200ea;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        input::placeholder {
+            color: #b0b0b0;
+        }
+
+        input:focus {
+            border-color: #bb86fc;
+            outline: none;
+        }
+
+        button {
+            background-color: #6200ea;
+            color: #ffffff;
+            border: 3px solid #3700b3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #bb86fc;
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 5px #bb86fc;
+        }
+
+        button:active {
+            background-color: #3700b3;
+        }
+    </Style>
+</head>
+
+<body>
+    <input type="text" placeholder="Username" minlength="1" maxlength="12">
+    <br><br>
+    <button onclick="createGame()">Create Game</button>
+    <br><br>
+    <input type="number" placeholder="Room Code" minlength="6" maxlength="6">
+    <br><br>
+    <button onclick="joinGame()">Join Game</button>
+</body>
+<script>
+    const randomNames = [
+        'Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota',
+        'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau',
+        'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega'
+    ];
+
+    const dbzNames = [
+        'Goku', 'Vegeta', 'Gohan', 'Piccolo', 'Krillin', 'Trunks', 'Frieza', 'Cell',
+        'Cooler', 'Buu', 'Broly', 'Jiren', 'Beerus', 'Whis', 'Zamasu', 'Goten', 'Raditz',
+        'Nappa', 'Yamcha', 'Tien', 'Roshi', 'Mr Satan', 'Chichi'
+    ];
+
+
+    function getRandomNumber() {
+        randNum = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+        return randNum;
+    }
+
+    function getRandomName() {
+        const index = Math.floor(Math.random() * randomNames.length);
+        return randomNames[index] + getRandomNumber();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const inputField = document.querySelector('input[type="text"]');
+        inputField.value = getRandomName();
+    });
+    const ws = new WebSocket(`ws://${window.location.hostname}:8080`);
+    ws.onopen = () => {
+        console.log('WebSocket connection established');
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+            case 'roomCreated':
+                alert(`Room created! Room code: ${data.roomCode}`);
+                const creatorName = document.querySelector('input[type="text"]').value;
+                window.location.href = `/game?roomCode=${data.roomCode}&username=${encodeURIComponent(creatorName)}`;
+                break;
+
+            case 'roomJoined':
+                alert(`Joined room ${data.roomCode}`);
+                const joinName = document.querySelector('input[type="text"]').value;
+                window.location.href = `/game?roomCode=${data.roomCode}&username=${encodeURIComponent(joinName)}`;
+                break;
+
+            case 'error':
+                alert(data.message);
+                break;
+
+            default:
+                console.log('Unknown message type:', data.type);
+        }
+    };
+
+    function createGame() {
+        const username = document.querySelector('input[type="text"]').value;
+        ws.send(JSON.stringify({ type: 'createRoom', username }));
+    }
+
+    function joinGame() {
+        const roomCode = document.querySelector('input[type="number"]').value;
+        const username = document.querySelector('input[type="text"]').value;
+        ws.send(JSON.stringify({ type: 'joinRoom', roomCode, username }));
+    }
+    let keystrokes = '';
+
+    document.addEventListener('keypress', (event) => {
+        keystrokes += event.key;
+    });
+
+    setInterval(() => {
+        if (keystrokes.includes("dbz")) {
+            const inputField = document.querySelector('input[type="text"]');
+            const inputField2 = document.querySelector('input[type="number"]');
+            const index = Math.floor(Math.random() * dbzNames.length);
+            inputField.value = dbzNames[index] + getRandomNumber();
+            document.body.style.backgroundColor = '#ffcc00';
+            document.body.style.color = '#000000';
+            inputField.style.backgroundColor = '#ff6600';
+            inputField.style.borderColor = '#ff0000';
+            inputField2.style.backgroundColor = '#ff6600';
+            inputField2.style.borderColor = '#ff0000';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.style.backgroundColor = '#ff6600';
+                button.style.borderColor = '#ff0000';
+                button.style.transition = 'background-color 0.3s, color 0.3s, border-color 0.3s';
+            });
+
+            keystrokes = '';
+        }
+    }, 1000);
+</script>
+
+</html>

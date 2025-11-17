@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 8-2</title>
+    </head>
+   
+    <body>
+      <h2>CIW JavaScript Specialist</h2>
+      <hr>
+ 
+        <script>
+        class Device{
+            constructor(name, brand){
+                this.name = name;
+                this.brand = brand;
+                this.display = function() {
+                    return this.name + " " + this.brand
+                }
+            }
+        }
+ 
+ 
+        const dev1 = new Device("Vostro", "Dell");
+        document.write(dev1.display());
+        </script>
+ 
+    </body>
+</html>

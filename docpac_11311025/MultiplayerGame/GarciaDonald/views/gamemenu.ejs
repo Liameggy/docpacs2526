@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        text-align: center;
+        font-family: Arial, sans-serif;
+    };
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    };
+</style>
+<body>
+    <h1>Button Masher V2</h1>
+    <div class="container">
+        <h2>Hello, <%- user %></h2>
+        <h3>Please select a game mode:</h3>
+        <a href="/game"><button>Single Player</button></a>
+        <br>
+        <a href="/lobby"><button>Multiplayer</button></a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            background-color:black;
+        }
+
+        #player {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        #play-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();        
+    </script>
+</head>
+
+<body>
+    <div id="player">Logged in as <%- user -%></div>
+    <h1>Rock Paper Scissors</h1>
+    <div id="game-container">
+        <button id="play-button" onclick="play()">PLAY</button><br><br>
+        <div id="ratio">Game stats</div>
+        <button class="buttons" value="rock" onclick="picked(e)">Rock</button>
+        <button class="buttons" value="paper" onclick="picked(e)">Paper</button>
+        <button class="buttons" value="scissors" onclick="picked(e)">Scissors</button>
+        <div id="result"></div><br>
+    </div>
+</body>
+<script>
+    let userWins = 0;
+    let enemyWins = 0;
+    let playVar = false;
+    let waitingForOpponent;
+    let startGame;
+    let enemyLeave = false;
+    const choices = ['rock', 'paper', 'scissors'];
+    const buttons = document.getElementsByClassName('buttons');
+    const playButton = document.getElementById('play-button');
+
+    let pendingUserChoice = null;
+
+    for (let button of buttons) {
+        button.disabled = true;
+    }
+
+    socket.on('results', (data) => {
+        if (!pendingUserChoice) return; 
+        const id = socket.id;
+        const enemyChoice = data[Object.keys(data).find(key => key != id)];
+        console.log('User choice:', pendingUserChoice);
+        console.log('Enemy choice:', enemyChoice);
+        setTimeout(() => {
+            determineWinner(pendingUserChoice, enemyChoice);
+            pendingUserChoice = null;
+        }, 2000);
+    });
+
+    socket.on('startGame', () => {
+        startGame = true;
+        playButton.disabled = false;
+    });
+    socket.on('waitingForOpponent', () => {
+        waitingForOpponent = true;
+        playButton.disabled = true;
+    });
+
+    socket.on('leave', () => {
+        enemyLeave = true;
+        playButton.disabled = true;
+        waitingForOpponent = true;
+        disableButtons();
+        resetVariables();
+    });
+
+    function play() {
+        playButton.disabled = true;
+        document.getElementById('result').innerText = "Please pick an option";
+        enableButtons();
+    }
+
+    function enableButtons() {
+        for (let button of buttons) {
+            button.disabled = false;
+        }
+    }
+
+    function disableButtons() {
+        for (let button of buttons) {
+            button.disabled = true;
+        }
+    }
+
+    function picked(e) {
+        event = e || window.e;
+        pendingUserChoice = event.target.value;
+        disableButtons();
+        document.getElementById('result').innerText = `You picked ${pendingUserChoice}`;
+        socket.emit('choiceMade', pendingUserChoice);
+    }
+
+    function determineWinner(userChoice, enemyChoice) {
+        if (userChoice === enemyChoice) {
+            document.getElementById('result').innerText = `It's a tie, you both picked ${userChoice}.`;
+        } else if (
+            (userChoice === 'rock' && enemyChoice === 'scissors') ||
+            (userChoice === 'paper' && enemyChoice === 'rock') ||
+            (userChoice === 'scissors' && enemyChoice === 'paper')
+        ) {
+            userWins ++
+            document.getElementById('result').innerText = `You win this round, opponent picked ${enemyChoice}`;
+            if (userWins === 3) {
+                document.getElementById('result').innerText += "Player wins";
+                playButton.disabled = false;
+                disableButtons();
+                resetVariables();
+            }
+        } else {
+            enemyWins ++
+            document.getElementById('result').innerText = `You lose this round, opponent picked ${enemyChoice}`;
+            if (enemyWins === 3) {
+                document.getElementById('result').innerText += "Opponent wins";
+                playButton.disabled = false;
+                disableButtons();
+                resetVariables();
+            }
+        }
+        enableButtons();
+    }
+
+    function resetVariables() {
+        userWins = 0;
+        enemyWins = 0;
+        playVar = false;
+    }
+
+    socket.on('logout', () => {
+        window.location.href = '/logout';
+    });
+
+    function gameLoop() {
+        if (waitingForOpponent) {
+            document.getElementById('result').innerText = "Waiting for another player";
+            waitingForOpponent = false;
+        }
+        if (startGame) {
+            document.getElementById('result').innerText = "Another player is online. You may play";
+            startGame = false;
+        }
+        if (enemyLeave) {
+            document.getElementById('result').innerText = "The other player has ran away...coward";
+            enemyLeave = false;
+        }
+        document.getElementById('ratio').innerHTML = `<h3>Wins:</h3></br> You ${userWins} : Enemy ${enemyWins}`;
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
+
+</html>

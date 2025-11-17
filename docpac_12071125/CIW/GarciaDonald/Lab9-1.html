@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 9-1</title>
+    </head>
+	
+	<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+	<form id="favoriteForm">
+		<p>Please select your favorite type of website:</p>
+		<label>
+		<input id="radiobuttonWebdev" type="radio" name="group1" value="Web_Development" checked>
+		Web Development
+		</label><br>
+		<label>
+		<input id="radiobuttonGovernment" type="radio" name="group1" value="Government">
+		U.S. Government
+		</label><br>
+		<label>
+		<input id="radiobuttonBored" type="radio" name="group1" value="something to do in class when you're bored">
+		Something to do in class when you're bored
+		</label><br>
+		<label>
+		<input id="radiobuttonPortfolio" type="radio" name="group1" value="portfolio?">
+		Portfolio?
+		</label><br>
+		<label>
+		<input id="radiobuttonDeftones" type="radio" name="group1" value="peak song">
+		Peak Song
+		</label><br>
+
+		<button type="button" id="changeButton">Click Here</button>
+	</form>
+
+	<script>
+		const form = document.getElementById('favoriteForm');
+		const button = document.getElementById('changeButton');
+
+		button.addEventListener('click', () => {
+		const selected = form.querySelector('input[name="group1"]:checked');
+		if (!selected) return;
+
+		const value = selected.value;
+
+		  // Redirect based on value
+		if (value === 'Web_Development') {
+			window.location.href = 'http://www.CIWcertified.com/';
+		} else if (value === 'Government') {
+			window.location.href = 'http://www.whitehouse.gov/';
+		} else if (value === 'something to do in class when you\'re bored') {
+			window.location.href = 'https://www.coolmathgames.com/';
+		} else if (value === 'portfolio?') {
+			window.location.href = 'https://donaldg2027.github.io/';
+		} else if (value === 'peak song') {
+			window.location.href = 'https://open.spotify.com/track/1EryAkZ0VHstC6haIxVBiE?si=e6c685048f884980';
+		}
+		});
+	</script>
+
+	</body>
+</html>

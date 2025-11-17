@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Lab 6-5</title>
+  <style>
+    a img {
+      cursor: pointer;
+    }
+  </style>
+
+  <script>
+    // Preload images with consistent names and paths
+    const ciw_on = new Image();
+    ciw_on.src = "ciw_on.gif";
+
+    const ciw_off = new Image();
+    ciw_off.src = "ciw_off.gif";
+
+    const ciw1_on = new Image();
+    ciw1_on.src = "ciw1_on.gif";
+
+    const ciw1_off = new Image();
+    ciw1_off.src = "ciw1_off.gif";
+
+	
+    function switchImageOn(imageElement) {
+      switch (imageElement.name) {
+        case "ciw":
+          imageElement.src = ciw_on.src;
+          break;
+        case "ciw1":
+          imageElement.src = ciw1_on.src;
+          break;
+      }
+    }
+
+    function switchImageOff(imageElement) {
+      switch (imageElement.name) {
+        case "ciw":
+          imageElement.src = ciw_off.src;
+          break;
+        case "ciw1":
+          imageElement.src = ciw1_off.src;
+          break;
+      }
+    }
+
+    // Add event listeners when DOM loads
+    window.addEventListener('DOMContentLoaded', () => {
+      const ciwLink = document.querySelector('a[href="http://www.ciwcertified.com"]');
+      const ciwImg = ciwLink.querySelector('img');
+
+      ciwLink.addEventListener('mouseover', () => {
+        switchImageOn(ciwImg);
+        window.status = 'Visit CIW Certified';
+      });
+
+      ciwLink.addEventListener('mouseout', () => {
+        switchImageOff(ciwImg);
+        window.status = '';
+      });
+
+      const ciw1Link = document.querySelector('a[href="https://www.ciwcertified.com/about-ciw/training-locator"]');
+      const ciw1Img = ciw1Link.querySelector('img');
+
+      ciw1Link.addEventListener('mouseover', () => {
+        switchImageOn(ciw1Img);
+        window.status = 'Visit CIW Training Locator';
+      });
+
+      ciw1Link.addEventListener('mouseout', () => {
+        switchImageOff(ciw1Img);
+        window.status = '';
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <h2>CIW JavaScript Specialist</h2>
+  <hr>
+
+  <a href="http://www.ciwcertified.com">
+    <img src="ciw_off.gif" name="ciw" alt="CIW Certified" width="100" height="52" />
+  </a>
+
+  <p>
+    <a href="https://www.ciwcertified.com/about-ciw/training-locator">
+      <img src="ciw1_off.gif" name="ciw1" alt="CIW Training Locator" width="100" height="52" />
+    </a>
+  </p>
+</body>
+</html>

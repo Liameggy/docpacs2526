@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<script>
+			// Creating an empty object and then adding properties
+			class Bicycles {
+				constructor(color, type, wheels, seats, price) {
+					this.color = color;
+					this.type = type;
+					this.wheels = wheels;
+					this.seats = seats;
+					this.price = price;
+				}
+			}
+		</script>
+
+		<script>
+			// Create an object literal with properties and methods
+			const bicycle = {
+				color: "red",
+				type: "mountain",
+				wheels: 2,
+				seats: 1,
+				price: 300,
+				displayInfo: function() {
+					alert(`Bicycle Details:\nColor: ${this.color}\nType: ${this.type}\nWheels: ${this.wheels}\nSeats: ${this.seats}\nPrice: $${this.price}`);
+				}
+			};
+		</script>
+
+		<script>
+			// Create a constructor function
+			function Bicycle(color, type, wheels, seats, price) {
+				this.color = color;
+				this.type = type;
+				this.wheels = wheels;
+				this.seats = seats;
+				this.price = price;
+				this.displayInfo = function() {
+					alert(`Bicycle Details:\nColor: ${this.color}\nType: ${this.type}\nWheels: ${this.wheels}\nSeats: ${this.seats}\nPrice: $${this.price}`);
+				};
+			}
+			// Create an array of objects
+			const bicycles = [
+				new Bicycle("red", "mountain", 2, 1, 300),
+				new Bicycle("blue", "road", 2, 1, 400),
+				new Bicycle("green", "hybrid", 2, 1, 350)
+			];
+
+		</script>
+
+		<script>
+        // Create a function        
+        function showBicycleInfo() {
+            let msg = 'Bicycle Details:\n';
+            bicycles.forEach((bike, i) => {
+                msg += `\nBicycle ${i + 1}:\nColor: ${bike.color}\nType: ${bike.type}\nWheels: ${bike.wheels}\nSeats: ${bike.seats}\nPrice: $${bike.price}\n`;
+            });
+            alert(msg);
+        }
+        </script>
+
+        <h3>Please click on this button to show the Bicycle Information</h3><br>
+		<button id="showBikes">Show Bicycle Info</button>
+
+        <script>
+		// Add an event listener for the button
+		document.getElementById("showBikes").addEventListener("click", showBicycleInfo);
+        </script>
+
+	</body>
+</html>

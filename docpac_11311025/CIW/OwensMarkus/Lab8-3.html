@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 3-2</title>
+    </head>
+	
+	<body>
+	  <div id="output"></div>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+	  <script>
+		//  write your code here retern list of integer from 1-5
+		function integer() {
+			let num = 1;
+			while (true) {
+				yield num++;
+				
+			}
+		}
+	   
+		//  create generator object here
+		generator = integer();
+		const get = generator;
+	  const outputer = document.getElementById("output")
+		//  get reference to the HTML element where generator output will be displayed
+
+		//  write the for loop here    
+for (let i = 0; i < 5; i++) {
+	document.createElement("span");
+	span.innerHTML = get.next().value + " ";
+	outputer.appendChild(span);
+}
+	  </script>
+	</body>
+</html>

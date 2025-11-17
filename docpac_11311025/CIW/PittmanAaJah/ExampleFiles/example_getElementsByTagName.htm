@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Example: getElementsByTagName</title>
+
+<script type="text/javascript">
+var numslides=0,currentslide=0;
+var slides = new Array();
+function StartSlideShow() {
+   imgs=document.getElementsByTagName("img");
+   for (i=0; i<imgs.length; i++) {
+      if (imgs[i].className != "slide") continue;
+      slides[numslides]=imgs[i];
+      if (numslides==0) {
+         imgs[i].style.display="block";
+      } else {
+         imgs[i].style.display="none";
+      }
+      imgs[i].onclick=NextSlide;
+      numslides++;
+   }
+}
+function NextSlide() {
+   slides[currentslide].style.display="none";
+   currentslide++;
+   if (currentslide >= numslides) currentslide = 0;
+   slides[currentslide].style.display="block";
+}
+window.onload=StartSlideShow;
+</script>
+</head>
+
+<body>
+<h1>Cool Slide Show</h1>
+<img class="slide" src="images/pics1.jpeg" width="400" height="300" alt="A pink tulip flower" />  
+<img class="slide" src="images/pics2.jpeg" width="400" height="300" alt="A red color sunflower" />
+<img   class="slide" src="images/pics3.jpeg" width="400" height="300" alt="A bunch of daisies" />
+<img class="slide" src="images/pics4.jpeg" width="400" height="300" alt="Purple petaled flowers" />
+<img class="slide" src="images/pics5.jpeg" width="400" height="300" alt="A few blooming roses" />
+<p>Click the image to advance the slides.</p>
+</body>
+</html>
+

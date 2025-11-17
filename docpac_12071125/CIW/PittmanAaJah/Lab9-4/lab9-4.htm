@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Lab 9-4</title>
+</head>
+
+<body>
+    <h3>CIW JavaScript Specialist</h3>
+    <hr />
+    <div id="SetDiv" special_attribute="CIW rules!">
+        <p>What are the attributes of this div tag?</p>
+    </div>
+    <input type="button" value="Click Me!" onclick="getValues()" />
+    <p>Please click the button now</p>
+    <script type="text/javascript">
+        var div = null;
+
+        function getValues() {
+            if (div == null) {
+                div = document.getElementById("SetDiv");
+            }
+            alert("ID: " + div.id);
+            alert("Special Attribute: " + div.getAttribute("special_attribute"));
+            changeValues();
+        }
+
+        function changeValues() {
+            if (div == null) {
+                div = document.getElementById("SetDiv");
+            }
+            div.setAttribute("title", "div1");
+            alert("Title: " + div.title);
+            removeValues();
+        }
+
+        function removeValues() {
+            if (div == null) {
+                div = document.getElementById("SetDiv");
+            }
+            div.removeAttribute("title");
+            alert("Title after removal: " + div.title);
+            changeValuesBack();
+        }
+
+        function changeValuesBack() {
+            if (div == null) {
+                div = document.getElementById("SetDiv");
+            }
+            div.setAttribute("title", "div2");
+            alert("Title after change back: " + div.title);
+        }
+    </script>
+</body>
+
+</html>

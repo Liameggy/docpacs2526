@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<script>
+			let bucket1 = {
+				name: "Bucket 1",
+				shape: "Cylindrical",
+				color: "Red",
+				diameter: 12,
+				height: 40,
+				handle: true,
+			};
+			
+			let bucket2 = {
+				name: "Bucket 2",
+				shape: "Cylindrical",
+				color: "White",
+				diameter: 36,
+				height: 80,
+				handle: false,
+			};
+
+			class Bucket {
+				constructor(name, shape, color, diameter, height, handle) {
+					this.name = name;
+					this.shape = shape;
+					this.color = color;
+					this.diameter = diameter;
+					this.height = height;
+					this.handle = handle;
+				}
+
+				displayInfo() {
+					alert(`Name: ${this.name}\nShape: ${this.shape}\nColor: ${this.color}\nDiameter: ${this.diameter}\nHeight: ${this.height}\nHandle: ${this.handle}`);
+				}
+			}
+
+		const buckets = [new Bucket(bucket1.name, bucket1.shape, bucket1.color, bucket1.diameter, bucket1.height, bucket1.handle),
+						new Bucket(bucket2.name, bucket2.shape, bucket2.color, bucket2.diameter, bucket2.height, bucket2.handle)];
+							
+		function displayBuckets() {
+			buckets.forEach(bucket => bucket.displayInfo());
+		}
+
+		</script>
+
+		<h3>Please click on this button to display the information on these buckets.</h3><br>
+
+		<button onclick="displayBuckets()">Display Bucket Information</button>
+
+
+
+
+	</body>
+</html>
+
+</html>

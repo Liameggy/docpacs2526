@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+   
+    <body>
+      <h2>CIW JavaScript Specialist</h2>
+      <hr>
+ 
+        <script>
+            const car = ["name", "color", "year", "brand"]
+        for (i = 0; i < 4; i++) {
+            document.write(` ${car[i]}`)
+        }
+        </script>
+        <script>
+            class Car{
+                constructor(name, color, year, brand) {
+                    this.name = name;
+                    this.color = color;
+                    this.year = year;
+                    this.brand = brand;
+                }
+            }
+ 
+        </script>
+        <script>
+            const mustang = new Car("mustang", "red", "2009", "ford")
+        </script>
+        <h3>Please click on this button to... <button id="btn">View Data!</button></h3><br>
+        <script>
+        document.getElementById("btn").addEventListener("click", function() {
+            for (let data in mustang) {
+            alert(`${data}: ${mustang[data]}`)
+        }
+        })
+ 
+        </script>
+ 
+    </body>
+</html>

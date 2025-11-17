@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+	
+	<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+
+		<script>
+			// Creating an empty object and then adding properties
+			const myObject = {};
+			myObject.name = "slave";
+			myObject.age = 30;
+			myObject.job = "feed cows";
+			myObject.sayHello = function() {
+				alert(`Hello, my name is ${this.name}. I've been here for ${this.age} years and I hate having to ${this.job}.`);
+			};
+
+		</script>
+
+		<script>
+			// Create an object literal with properties and methods
+			const anotherObject = {
+				name: "Marcus",
+				age: 25,
+				job: "gladiator",
+				sayHello: function() {
+					alert(`The name is ${this.name}. Unlike the slave, I've only been here for ${this.age} years and I love being a ${this.job}!`);
+				}
+			};
+
+
+
+		</script>
+
+		<script>
+			// Create a constructor function 
+			function TerribleOffer(item, price) {
+				this.item = item;
+				this.price = price;
+				this.describeOffer = function() {
+					alert(`Get your ${this.item} for only $${this.price}! This is a once in a lifetime offer!`);
+				};
+				}
+			
+
+
+
+			// Create an array of objects
+			const offers = [
+				new TerribleOffer("used chariot", 500),
+				new TerribleOffer("ancient scroll", 300),
+				new TerribleOffer("rusty sword", 150)
+			];
+
+
+
+		</script>
+
+		<script>
+		// Create a function        
+		function showOffers() {
+			offers.forEach(function(offer) {
+				offer.describeOffer();
+			});
+		}
+
+		</script>
+
+		<h3>Please click on this button to... Remember to create a button for this!</h3><br>
+		<button id="offerButton">Show Offers</button>
+
+		<script>
+		// Add an event listener for the button
+		document.getElementById("offerButton").addEventListener("click", function() {
+			offers.forEach(function(offer) {
+				offer.describeOffer();
+			});
+		});
+		
+		</script>
+
+	</body>
+</html>

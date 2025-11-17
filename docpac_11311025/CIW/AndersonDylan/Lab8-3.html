@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 3-2</title>
+    </head>
+	
+	<body>
+	  <div id="output"></div>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+	  <script>
+		//  write your code here
+		function* numberGenerator() {
+			for (let i = 1; i <= 5; i++) {
+				yield i;
+			}
+		}
+	   
+		//  create generator object here
+		const gen = numberGenerator();
+	  
+		//  get reference to the HTML element where generator output will be displayed
+		const outputDiv = document.getElementById("output");
+
+		//  write the for loop here   
+		for (const num of gen) {
+			outputDiv.innerHTML += num + " ";
+		}
+
+	  </script>
+	</body>
+</html>

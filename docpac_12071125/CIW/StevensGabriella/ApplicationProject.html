@@ -1,0 +1,199 @@
+<!-- This project uses AI. There are comments in the code that I wrote to explain that I understand
+ what the code is doing. -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violin</title>
+    <style>
+        body {
+            margin-left: 20px;
+        }
+
+        #paragraph {
+            width: 600px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Welcome to a short website about the Violin!</h1>
+    <div id="paragraph">
+        <p>The violin is a string instrument which has four strings and is played with a bow. It is the smallest and
+            highest-pitched instrument in the string family.
+            Violins are used in a wide variety of musical genres, including classical, jazz, folk, and pop music. They
+            are known for their expressive sound and versatility.
+            Violins are often considered a difficult instrument, but with time and practice, anybody can learn.
+            The violin itself is wooden, and it has many parts. Some defining features are the fingerboard, fine tuners,
+            the pegs, and the bridge.
+            The bow is made up of horse hair. To avoid the bow sliding, rosin is applied to the hair to create friction.
+            It's important to clean the violin with a rag after playing to remove rosin dust and maintain its
+            appearance.
+            Whether you are a beginner or an experienced player, the violin offers a unique and rewarding musical
+            experience.</p>
+    </div>
+     <!--Creates a div for the questions and answers. This quiz uses the radio type as requested by CIW.  -->
+    <div id="questions">
+        <div class="question">
+            <h3>Question: How many strings does a violin have?</h3>
+            <form name="formButtons">
+                <label>
+                    <!-- The name attribute is used later to reference the question and answer names below -->
+                    <input type="radio" name="group1" value="incorrect">
+                    3 strings
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="correct">
+                    4 strings
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    5 strings
+                </label><br>
+                <br>
+            </form>
+        </div>
+        <div class="question">
+            <h3>Question: Which genre of music is not included in the example genres?</h3>
+            <form name="formButtons">
+                <label>
+                    <input type="radio" name="group1" value="correct">
+                    Rock
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Jazz
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Classical
+                </label><br>
+                <br>
+            </form>
+        </div>
+        <div class="question">
+            <h3>Question: What type of hair is the bow made up of?</h3>
+            <form name="formButtons">
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Synthetic hair
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="correct">
+                    Horse hair
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Human hair
+                </label><br>
+                <br>
+            </form>
+        </div>
+        <div class="question">
+            <h3>Question: What is applied to the bow to create friction?</h3>
+            <form name="formButtons">
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Glue
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    Horse hair
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="correct">
+                    Rosin
+                </label><br>
+                <br>
+            </form>
+        </div>
+        <div class="question">
+            <h3>Question: Which of the following violin features are not a part of the violin?</h3>
+            <form name="formButtons">
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    The bridge
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="incorrect">
+                    The pegs
+                </label><br>
+                <label>
+                    <input type="radio" name="group1" value="correct">
+                    The shoulder rest
+                </label><br>
+                <br>
+            </form>
+        </div>
+    </div>
+    <button type="button" id="submitButton">Submit Answers</button>
+    <script>
+        const button = document.getElementById('submitButton');
+
+        button.addEventListener('click', () => {
+            const questions = document.querySelectorAll('.question');
+            const total = questions.length;
+            let score = 0;
+            const questionsData = [];
+
+            for (let i = 0; i < total; i++) {
+                // Inputs all the questions into an array to be processed and ensures
+                // that every question is answered before the quiz is submitted.
+                const q = questions[i];
+                const name = q.querySelector('input[type="radio"]')?.name;
+                const selected = name ? q.querySelector(`input[name="${name}"]:checked`) : null;
+                if (!selected) {
+                    alert('Please answer all questions before submitting.');
+                    return;
+                }
+                // This code checks for which answer was selected by the user
+                // and gets the display text for the selected answer
+                const selectedLabel = selected.closest('label');
+                const selectedText = selectedLabel ? selectedLabel.textContent.trim() : selected.value;
+
+                // This code checks for what the correct answer is, gets that answer, 
+                //and gets the display text for the correct answer.
+                const correctInput = q.querySelector('input[value="correct"]');
+                const correctLabel = correctInput ? correctInput.closest('label') : null;
+                const correctText = correctLabel ? correctLabel.textContent.trim() : (correctInput ? correctInput.value : null);
+
+                //If the answer is correct, add it to the score
+                const isCorrect = selected.value === 'correct';
+                if (isCorrect) score++;
+
+                //This code inputs the question, selected answer, correct answer, 
+                //and whether the user got it right into an array
+                questionsData.push({
+                    //The question text is grabbed from the h3 element and it's trimmed of white space.
+                    //The question number is also stored via index, so +1 is needed
+                    question: q.querySelector('h3') ? q.querySelector('h3').textContent.trim() : `Question ${i+1}`,
+                    selected: selectedText,
+                    correct: correctText,
+                    correctChosen: isCorrect
+                });
+            }
+
+            
+            //Sets the score as a percentage, as requested by CIW
+            const percentage = total ? Math.round((score / total) * 100) : 0;
+
+            // save the result to sessionStorage and navigate to results page, so this data is available for use
+            try {
+                sessionStorage.setItem('quizResult', JSON.stringify({
+                    percentage,
+                    score,
+                    total,
+                    questions: questionsData
+                }));
+            } catch (e) {
+                console.error('Could not save result:', e);
+            }
+            window.location.href = 'results.html';
+        });
+    </script>
+</body>
+
+</html>

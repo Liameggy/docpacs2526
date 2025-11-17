@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<script>
+			// Creating an empty object and then adding properties
+			// Creating an empty object and then adding properties
+			const person = {};
+			person.firstName = 'Dylan';
+			person.lastName = 'Anderson';
+			person.role = 'CIW JavaScript Specialist';
+			person.getFullName = function() {
+				return this.firstName + ' ' + this.lastName;
+			};
+
+			// make available to other scripts and for debugging
+			window.person = person;
+			console.log('Created person:', person);
+
+
+
+		</script>
+
+		<script>
+			// Create an object literal with properties and methods
+			const course = {
+				title: 'CIW JavaScript Specialist',
+				level: 'Intermediate',
+				durationHours: 12,
+				topics: ['Objects', 'Functions', 'Events'],
+				describe() {
+					return `${this.title} (${this.level}) — ${this.durationHours} hours`;
+				},
+				addTopic(topic) {
+					if (topic && typeof topic === 'string') {
+						this.topics.push(topic);
+					}
+				},
+				listTopics() {
+					return this.topics.join(', ');
+				}
+			};
+
+			// expose for debugging
+			window.course = course;
+			console.log('Created course:', course);
+
+		</script>
+
+		<script>
+			// Create a constructor function 
+			function Student(name, age, grade) {
+				this.name = name;
+				this.age = age;
+				this.grade = grade;
+				this.isEnrolled = true;
+				this.getInfo = function() {
+					return `${this.name}, Age: ${this.age}, Grade: ${this.grade}`;
+				};
+			}
+
+			// Create an array of objects
+			const students = [
+				new Student('John Doe', 20, 'A'),
+				new Student('Jane Smith', 22, 'B'),
+				new Student('Bob Wilson', 19, 'A-')
+			];
+
+			// Make available for debugging
+			window.Student = Student;
+			window.students = students;
+			console.log('Created students:', students);
+		</script>
+
+		<script>
+		// Create a function        
+		function displayInfo() {
+			let output = '';
+			output += 'Person: ' + person.getFullName() + '\n';
+			output += 'Course: ' + course.describe() + '\n';
+			output += 'Topics: ' + course.listTopics() + '\n';
+			output += 'Students:\n';
+			students.forEach(student => {
+				output += '- ' + student.getInfo() + '\n';
+			});
+			alert(output);
+		}
+		window.displayInfo = displayInfo;
+		</script>
+
+		<h3>Please click on this button to... Remember to create a button for this!</h3><br>
+		
+
+		<script>
+		// Add an event listener for the button      
+		document.write('<button onclick="displayInfo()">Display Information</button>');
+		</script>
+
+	</body>
+</html>

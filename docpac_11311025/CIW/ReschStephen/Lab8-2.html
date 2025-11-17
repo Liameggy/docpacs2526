@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lab 8-2</title>
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+
+	<script>
+		// create a class here
+		class Device {
+			constructor(model, manufacturer) {
+				this.model = model;
+				this.manufacturer = manufacturer;
+			}
+
+			display() {
+				document.write(
+					`<p>The name of the device is ${this.model} and its brand is ${this.manufacturer}</p>`
+				);
+			}
+		}
+
+		const dev1 = new Device("Vostro", "Dell");
+		dev1.display();
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lab 3-2</title>
+</head>
+
+<body>
+	<div id="output"></div>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+
+	<script>
+		//  write your code here
+		function* integerGenerator() {
+			let num = 1;
+			while (true) {
+				yield num; // ✅ yield the value
+				num++;
+			}
+		}
+		//  create generator object here
+		const get = integerGenerator();
+		//  get reference to the HTML element where generator output will be displayed
+		const output = document.getElementById("output");
+		let i = 0;
+		for (let value of get) {
+			if (i < 5) {
+				output.innerHTML += value + " ";
+				i++;
+			} else {
+				break;
+			}
+		}
+	</script>
+</body>
+
+</html>

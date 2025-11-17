@@ -1,0 +1,18 @@
+form {
+    display: inline;
+}
+
+button {
+    display: inline-block;
+    padding: 10px 30px;
+    background-color: #cccccc;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}

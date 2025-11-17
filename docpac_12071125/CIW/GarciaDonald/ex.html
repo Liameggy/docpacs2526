@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>application project thingy</title>
+</head>
+<body>
+    <h1>What is Track & Field?</h1>
+    <p>Track and field is a sport which includes various athletic contests based on running, jumping, and throwing. 
+        The name is derived from the typical venue for such competitions, a stadium with an oval running track enclosing a grass field where events take place.</p>
+    // quiz using radio buttons
+    <h2>Quiz: Which of the following is NOT a track and field event?</h2>
+    <form>
+        <input type="radio" id="100m" name="event" value="100m">
+        <label for="100m">100-meter dash</label><br>
+        <input type="radio" id="longjump" name="event" value="longjump">
+        <label for="longjump">Long jump</label><br>
+        <input type="radio" id="swimming" name="event" value="swimming">
+        <label for="swimming">Swimming</label><br>
+        <input type="radio" id="javelin" name="event" value="javelin">
+        <label for="javelin">Javelin throw</label><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <p>Select an answer you think is the right one.</p>
+</body>
+<script>
+    // JavaScript to handle quiz submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const selectedEvent = document.querySelector('input[name="event"]:checked');
+        if (selectedEvent) {
+            if (selectedEvent.value === 'swimming') {
+                alert('Correct! Swimming is not a track and field event. If this was your first try, you actually know something about track and field. Congrats!');
+                alert("if this was any number of tries greater than one, you are a disgrace to track and field enthusiasts everywhere. Get out of my sight.");
+            } else {
+                alert('Incorrect. ' + selectedEvent.value + ' is a track and field event. I really don\'t know why you picked that. You dummy.');
+            }
+        } else {
+            alert('Please select an event before submitting.');
+        }
+    });
+</script>
+</html>

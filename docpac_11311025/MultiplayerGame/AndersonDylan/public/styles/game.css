@@ -1,0 +1,68 @@
+button {
+    display: inline-block;
+    padding: 10px 30px;
+    background-color: #cccccc;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+#play-button {
+    display: block;
+    margin: 20px auto;
+    min-width: 120px;
+}
+
+#game-status {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+h1 {
+    font-family: 'Georgia', sans-serif;
+    text-align: center;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 90vmin; /* Use vmin to ensure the board remains square */
+    height: 90vmin; /* Matches width to maintain aspect ratio */
+    margin: auto;
+    outline: 4px solid #000;
+}
+
+.tile {
+    outline: 2px solid #000;
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100%; /* Ensure the tile takes full height */
+}
+
+img {
+    width: 85%;
+    height: 85%;
+}

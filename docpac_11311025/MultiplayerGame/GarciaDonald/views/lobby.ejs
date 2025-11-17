@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Lobby</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .lobby-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .lobby-section {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .status {
+            font-size: 20px;
+            color: #2196F3;
+            margin: 20px 0;
+        }
+        .player-list, .available-lobbies {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        .player-item, .lobby-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lobby-item {
+            background-color: #f5f5f5;
+        }
+        .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .ready-btn {
+            background-color: #4CAF50;
+            color: white;
+            display: none;
+        }
+        .join-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        .create-btn {
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .sections-container {
+            display: flex;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="lobby-container">
+        <h1>Welcome to the Multiplayer Lobby</h1>
+        <div id="status" class="status">Connecting to server...</div>
+        
+        <div class="sections-container">
+            <div class="lobby-section">
+                <h2>Your Lobby</h2>
+                <div id="playerList" class="player-list"></div>
+                <button id="readyBtn" class="btn ready-btn">Ready to Play!</button>
+                <button id="createLobbyBtn" class="btn create-btn">Create New Lobby</button>
+            </div>
+            
+            <div class="lobby-section">
+                <h2>Available Lobbies</h2>
+                <div id="availableLobbies" class="available-lobbies">
+                    <div class="lobby-item">No lobbies available</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const username = '<%= user %>'; // Get username from EJS
+    let currentRoomId = null;
+    let players = new Set();
+    let isReady = false;
+
+    // DOM elements
+    const statusEl = document.getElementById('status');
+    const playerListEl = document.getElementById('playerList');
+    const readyBtn = document.getElementById('readyBtn');
+    const createLobbyBtn = document.getElementById('createLobbyBtn');
+    const availableLobbiesEl = document.getElementById('availableLobbies');
+
+    // Create a new lobby
+    function createLobby() {
+        const newRoomId = 'lobby-' + Math.random().toString(36).substr(2, 9);
+        currentRoomId = newRoomId;
+        console.log('Creating new lobby:', newRoomId);
+        socket.emit('createLobby', { username, roomId: newRoomId });
+    }
+
+    // Join an existing lobby
+    function joinLobby(roomId) {
+        if (currentRoomId) {
+            console.log('Leaving current lobby:', currentRoomId);
+            socket.emit('leaveLobby', { username, roomId: currentRoomId });
+        }
+        currentRoomId = roomId;
+        console.log('Joining lobby:', roomId);
+        socket.emit('joinLobby', { username, roomId });
+    }
+
+    // Event listeners for buttons
+    createLobbyBtn.addEventListener('click', () => {
+        createLobby();
+    });
+
+    // Join lobby when connected
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        statusEl.textContent = 'Connected! Choose a lobby or create one';
+        // Request available lobbies
+        socket.emit('getLobbies');
+    });
+
+    // Update UI when players join/leave
+    socket.on('lobbyUpdate', (data) => {
+        players = new Set(data.players);
+        updatePlayerList();
+        updateStatus();
+    });
+
+    // Handle when players are ready
+    socket.on('playerReadyUpdate', (data) => {
+        const { readyPlayers, totalPlayers } = data;
+        console.log(`Ready players: ${readyPlayers}/${totalPlayers}`);
+        if (readyPlayers === totalPlayers) {
+            statusEl.textContent = 'All players ready! Starting game...';
+        } else {
+            statusEl.textContent = `Waiting for players... (${readyPlayers}/${totalPlayers} ready)`;
+        }
+    });
+
+    // Handle when a game is ready to start
+    socket.on('gameReady', (data) => {
+        console.log('Game ready to start, redirecting to game...');
+        const { gameId } = data;
+        statusEl.textContent = 'Game is ready! Starting soon...';
+        setTimeout(() => {
+            window.location.href = `/multigame?roomId=${currentRoomId}`;
+        }, 2000);
+    });
+
+    // Handle ready button click
+    readyBtn.addEventListener('click', () => {
+        isReady = true;
+        readyBtn.disabled = true;
+        readyBtn.textContent = 'Waiting for other players...';
+        console.log('Sending playerReady event for room:', currentRoomId);
+        socket.emit('playerReady', { username, roomId: currentRoomId });
+    });
+
+    // Update the player list in the UI
+    function updatePlayerList() {
+        playerListEl.innerHTML = '';
+        players.forEach(player => {
+            console.log('player joined: ' + player);
+            const playerEl = document.createElement('div');
+            playerEl.className = 'player-item';
+            playerEl.textContent = player;
+            playerListEl.appendChild(playerEl);
+        });
+    }
+
+    // Update the status message and ready button
+    function updateStatus() {
+        const playerCount = players.size;
+        if (playerCount < 2) {
+            statusEl.textContent = `Waiting for players... (${playerCount}/2)`;
+            readyBtn.style.display = 'none';
+        } else if (playerCount === 2) {
+            statusEl.textContent = 'Lobby full! Get ready to play!';
+            readyBtn.style.display = 'inline-block';
+        }
+    }
+
+    // Handle available lobbies update
+    socket.on('lobbiesList', (data) => {
+        console.log('Received lobbies list:', data.lobbies);
+        updateAvailableLobbies(data.lobbies);
+    });
+
+    // Update the available lobbies list
+    function updateAvailableLobbies(lobbies) {
+        availableLobbiesEl.innerHTML = '';
+        if (lobbies.length === 0) {
+            const emptyEl = document.createElement('div');
+            emptyEl.className = 'lobby-item';
+            emptyEl.textContent = 'No lobbies available';
+            availableLobbiesEl.appendChild(emptyEl);
+            return;
+        }
+
+        lobbies.forEach(lobby => {
+            if (lobby.roomId !== currentRoomId) {  // Don't show current lobby
+                const lobbyEl = document.createElement('div');
+                lobbyEl.className = 'lobby-item';
+                lobbyEl.innerHTML = `
+                    <span>${lobby.host}'s Lobby (${lobby.playerCount}/2)</span>
+                    <button class="btn join-btn" onclick="joinLobby('${lobby.roomId}')">Join</button>
+                `;
+                availableLobbiesEl.appendChild(lobbyEl);
+            }
+        });
+    }
+
+    // Request lobby list refresh periodically
+    setInterval(() => {
+        socket.emit('getLobbies');
+    }, 5000);
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+        statusEl.textContent = 'Disconnected from server. Reconnecting...';
+        readyBtn.style.display = 'none';
+        currentRoomId = null;
+    });
+</script>
+</html>

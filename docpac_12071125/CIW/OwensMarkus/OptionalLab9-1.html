@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Optional Lab 9-1</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+	  <div class="div1" id="div1">
+		<p class="p1" id="p1">This is a sample webpage.</p>
+	  </div>
+
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+		const TheObject = document.getElementById("p1"); 
+		TheObject.innerHTML = "This site has been taken by TheObject tm.(patent pending)";
+		const Div1 = document.getElementById("div1");
+		const adder = document.createTextNode("Patent Appoved Celebrate Mortal!")
+		Div1.appendChild(adder);
+		Div1.attribute = "class";
+		Div1.setAttribute("class","crimson");
+		TheObject.style.color = "crimson";
+		TheObject.style.fontWeight = "bold";
+		TheObject.style.fontSize = "100px";
+		TheObject.style.textAlign = "center";
+		TheObject.style.backgroundColor = "black";
+	});
+	</script>
+	</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 7-4</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<div id="output"></div>
+
+		<script type="text/javascript">
+		const citiesArray = ["New York", "Los Angeles", "Chicago"]
+		const len = citiesArray.length
+
+
+
+		  const outputDiv = document.getElementById("output");
+		  
+		//Create for loop below
+		 for (i = 0; i < len; i++) {
+			// Create a paragraph element for each city with line breaks
+			const p = document.createElement("p");
+			p.textContent = citiesArray[i];
+			outputDiv.appendChild(p);
+			citiesArray.sort()
+		  }
+
+		//add alert below
+		alert(citiesArray[0])
+
+
+		</script>
+	</body>
+</html>

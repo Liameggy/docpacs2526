@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <Style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #6200ea;
+            color: #ffffff;
+            border: 3px solid #3700b3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background-color: #bb86fc;
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 5px #bb86fc;
+        }
+
+        button:active {
+            background-color: #3700b3;
+        }
+
+        #controls {
+            margin: 12px 0 16px 0;
+        }
+
+        #status, #playerCount {
+            margin: 8px 0;
+        }
+    </Style>
+</head>
+
+<body>
+    <h1>Rock Paper Scissors</h1>
+    <div id="controls">
+        <button id="rockBtn">Rock</button>
+        <button id="paperBtn">Paper</button>
+        <button id="scissorsBtn">Scissors</button>
+    </div>
+    <p id="status"></p>
+    <p id="playerCount">Players in room: 0</p>
+</body>
+<script>
+    const ws = new WebSocket(`ws://${window.location.hostname}:8080`);
+    const statusElement = document.getElementById('status');
+    const playerCountElement = document.getElementById('playerCount');
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomCode = urlParams.get('roomCode');
+    const username = urlParams.get('username');
+    let hasChosen = false;
+
+    const rockBtn = document.getElementById('rockBtn');
+    const paperBtn = document.getElementById('paperBtn');
+    const scissorsBtn = document.getElementById('scissorsBtn');
+
+    function setButtonsEnabled(enabled) {
+        [rockBtn, paperBtn, scissorsBtn].forEach(btn => btn.disabled = !enabled);
+    }
+
+    function sendChoice(choice) {
+        if (hasChosen) return;
+        hasChosen = true;
+        setButtonsEnabled(false);
+        statusElement.textContent = `You chose ${choice}. Waiting for opponent...`;
+        ws.send(JSON.stringify({ type: 'choice', roomCode, username, choice }));
+    }
+
+    rockBtn.addEventListener('click', () => sendChoice('rock'));
+    paperBtn.addEventListener('click', () => sendChoice('paper'));
+    scissorsBtn.addEventListener('click', () => sendChoice('scissors'));
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'joinRoom', roomCode, username }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+            case 'roomJoined':
+                statusElement.textContent = 'Room joined. Make your choice!';
+                setButtonsEnabled(true);
+                break;
+
+            case 'playerCount':
+                playerCountElement.textContent = `Players in room: ${data.count}`;
+                if (data.count < 2) {
+                    statusElement.textContent = 'Waiting for another player...';
+                    setButtonsEnabled(false);
+                } else if (!hasChosen) {
+                    statusElement.textContent = 'Opponent connected. Make your choice!';
+                    setButtonsEnabled(true);
+                }
+                break;
+
+            case 'choiceReceived':
+                // Optional: show that someone chose
+                break;
+
+            case 'result':
+                const { choices, winner } = data;
+                const entries = Object.entries(choices).map(([u, c]) => `${u}: ${c}`).join(' vs ');
+                statusElement.textContent = winner === 'Draw' ? `${entries}. It's a draw!` : `${entries}. ${winner} wins!`;
+                // Prepare next round
+                hasChosen = false;
+                setTimeout(() => {
+                    statusElement.textContent = 'Next round! Make your choice.';
+                    setButtonsEnabled(true);
+                }, 1500);
+                break;
+
+            case 'error':
+                alert(data.message);
+                break;
+
+            default:
+                console.log('Unknown message type:', data.type);
+        }
+    };
+</script>
+
+</html>

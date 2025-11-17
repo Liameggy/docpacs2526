@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 8 Application Project</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<script>
+			// Creating an empty object and then adding properties
+			class Car {
+			  constructor(make, model, year) {
+			    this.make = make;
+			    this.model = model;
+			    this.year = year;
+			  }
+
+			  displayInfo() {
+			    document.write("Car Make: " + this.make + ", Model: " + this.model + ", Year: " + this.year + "<br>");
+			  }
+			}
+
+
+
+
+		</script>
+
+		<script>
+			// Create an object literal with properties and methods
+			const bike = {
+			  make: "Trek",
+			  model: "Domane",
+			  year: 2021,
+			  displayInfo: function() {
+			    document.write("Bike Make: " + this.make + ", Model: " + this.model + ", Year: " + this.year + "<br>");
+			  }
+			};
+
+
+
+		</script>
+
+		<script>
+			// Create a constructor function 
+			function Truck(make, model, year) {
+			  this.make = make;
+			  this.model = model;
+			  this.year = year;
+			  this.displayInfo = function() {
+			    document.write("Truck Make: " + this.make + ", Model: " + this.model + ", Year: " + this.year + "<br>");
+			  };
+			}
+
+
+
+			// Create an array of objects
+			const vehicles = [
+			  new Car("Toyota", "Camry", 2020),
+			  bike,
+			  new Truck("Ford", "F-150", 2019)
+			];
+	   
+
+
+		</script>
+
+		<script>
+		// Create a function    
+		function showVehicleInfo() {
+		  for (let i = 0; i < vehicles.length; i++) {
+		    vehicles[i].displayInfo();
+		  }
+		}    
+
+		</script>
+
+		<h3>Please click on this button to... Remember to create a button for this!</h3><br>
+		
+
+		<script>
+		// Add an event listener for the button      
+		const button = document.createElement('button');
+		button.textContent = 'Show Vehicle Info';
+		button.addEventListener('click', showVehicleInfo);
+		document.body.appendChild(button);
+
+
+		</script>
+
+	</body>
+</html>

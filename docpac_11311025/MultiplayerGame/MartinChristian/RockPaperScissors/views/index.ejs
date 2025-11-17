@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #loginInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        #logout-button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        #digipogInfo {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #play-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();        
+    </script>
+</head>
+
+<body>
+    <div id="loginInfo">Logged in as <%- user -%><button id="logout-button" onclick="window.location.href='/logout'">Logout</button></div>
+    <h1>Rock Paper Scissors</h1>
+    <div id="game-container">
+        <button id="play-button" onclick="play()">PLAY</button><br><br>
+        <button class="buttons" value="rock" onclick="buttonPress(event)">Rock</button>
+        <button class="buttons" value="paper" onclick="buttonPress(event)">Paper</button>
+        <button class="buttons" value="scissors" onclick="buttonPress(event)">Scissors</button>
+        <div id="result"></div><br>
+        <div id="digipogInfo"></div>
+    </div>
+</body>
+<script>
+    let userLives = 10;
+    let enemyLives = 10;
+    let roundsPlayed = 0;
+    let userDigipogs = 1000;
+    let enemyDigipogs = 1000;
+    let digipogCost = 500;
+    let tax = digipogCost * 0.1;
+    let pogPool = 0;
+    let playVar = false;
+    let waitingForOpponent;
+    let startGame;
+    let enemyForfeit = false;
+    const choices = ['rock', 'paper', 'scissors'];
+    const buttons = document.getElementsByClassName('buttons');
+    const playButton = document.getElementById('play-button');
+
+    // stores the current choice sent by this client while awaiting results
+    let pendingUserChoice = null;
+
+    for (let button of buttons) {
+        button.disabled = true;
+    }
+
+    // Register the results listener once to avoid accumulating handlers and replaying previous rounds
+    socket.on('results', (data) => {
+        if (!pendingUserChoice) return; // ignore stray or late results when no pending choice
+        const id = socket.id;
+        const enemyChoice = data[Object.keys(data).find(key => key != id)];
+        console.log('User choice:', pendingUserChoice);
+        console.log('Enemy choice:', enemyChoice);
+        setTimeout(() => {
+            determineWinner(pendingUserChoice, enemyChoice);
+            pendingUserChoice = null;
+        }, 2000);
+    });
+
+    socket.on('roomFull', () => {
+        alert("Room is full. You will be logged out.");
+        window.location.href = '/logout';
+    });
+    socket.on('startGame', () => {
+        startGame = true;
+        playButton.disabled = false;
+    });
+    socket.on('waitingForOpponent', () => {
+        waitingForOpponent = true;
+        playButton.disabled = true;
+    });
+
+    socket.on('forfeit', () => {
+        enemyForfeit = true;
+        userDigipogs += pogPool;
+        playButton.disabled = true;
+        waitingForOpponent = true;
+        disableButtons();
+        resetVariables();
+    });
+
+    function play() {
+        // if either player lacks funds, don't start
+        if (userDigipogs < digipogCost) {
+            alert("Not enough funds");
+            return;
+        } else if (enemyDigipogs < digipogCost) {
+            alert("Enemy has insufficient funds");
+            return;
+        } else {
+            userDigipogs -= digipogCost;
+            enemyDigipogs -= digipogCost;
+            pogPool = (digipogCost - tax) * 2;
+            playButton.disabled = true;
+            document.getElementById('result').innerText = "Make your choice!";
+            enableButtons();
+        }
+    }
+
+    function enableButtons() {
+        for (let button of buttons) {
+            button.disabled = false;
+        }
+    }
+
+    function disableButtons() {
+        for (let button of buttons) {
+            button.disabled = true;
+        }
+    }
+
+    function buttonPress(event) {
+        // support inline calls that may not pass event explicitly
+        event = event || window.event;
+        pendingUserChoice = event.target.value;
+        disableButtons();
+        document.getElementById('result').innerText = `You chose ${pendingUserChoice}. Waiting for enemy...`;
+        socket.emit('choiceMade', pendingUserChoice);
+    }
+
+    function determineWinner(userChoice, enemyChoice) {
+        if (userChoice === enemyChoice) {
+            document.getElementById('result').innerText = `It's a tie! You both chose ${userChoice}.`;
+        } else if (
+            (userChoice === 'rock' && enemyChoice === 'scissors') ||
+            (userChoice === 'paper' && enemyChoice === 'rock') ||
+            (userChoice === 'scissors' && enemyChoice === 'paper')
+        ) {
+            enemyLives -= 1;
+            document.getElementById('result').innerText = `You win this round! You chose ${userChoice} and the enemy chose ${enemyChoice}.`;
+            if (enemyLives === 0) {
+                document.getElementById('result').innerText += " You have defeated the enemy!";
+                userDigipogs += pogPool;
+                playButton.disabled = false;
+                disableButtons();
+                resetVariables();
+            }
+        } else {
+            userLives -= 1;
+            document.getElementById('result').innerText = `You lose this round! You chose ${userChoice} and the enemy chose ${enemyChoice}.`;
+            if (userLives === 0) {
+                document.getElementById('result').innerText += " You have been defeated by the enemy!";
+                enemyDigipogs += pogPool;
+                playButton.disabled = false;
+                disableButtons();
+                resetVariables();
+            }
+        }
+        roundsPlayed += 1;
+        enableButtons();
+    }
+
+    function resetVariables() {
+        userLives = 10;
+        enemyLives = 10;
+        roundsPlayed = 0;
+        pogPool = 0;
+        playVar = false;
+    }
+
+    socket.on('logout', () => {
+        window.location.href = '/logout';
+    });
+
+    function gameLoop() {
+        if (waitingForOpponent) {
+            document.getElementById('result').innerText = "Waiting for an opponent to join...";
+            waitingForOpponent = false;
+        }
+        if (startGame) {
+            document.getElementById('result').innerText = "An opponent has joined! You can now play.";
+            startGame = false;
+        }
+        if (enemyForfeit) {
+            document.getElementById('result').innerText = "The enemy has forfeited the game!";
+            enemyForfeit = false;
+        }
+        document.getElementById('digipogInfo').innerHTML = `<h3>Digipog Info</h3>Your Digipogs: ${userDigipogs}<br>Enemy Digipogs: ${enemyDigipogs}<br>Pog Pool: ${pogPool}<br><br><h3>Lives:</h3>You (<%- user -%>): ${userLives}<br>Enemy: ${enemyLives}<br><br>Rounds Played: ${roundsPlayed}`;
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
+
+</html>

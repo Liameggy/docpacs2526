@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Example: getElementById</title>
+<script type="text/javascript">
+<!--
+var changedlink = 0;
+function changeLink()
+{
+  if(changedlink == 0){
+	document.getElementById("ChangeURL").innerHTML="CIW Certified";
+	document.getElementById("ChangeURL").href="http://www.CIWcertified.com/";
+	document.getElementById("ChangeURL").target="_blank";
+	changedlink++;
+  }else{
+	document.getElementById("ChangeURL").innerHTML="Microsoft";
+	document.getElementById("ChangeURL").href="http://www.microsoft.com/";
+	document.getElementById("ChangeURL").target="_blank";
+	changedlink--;
+  }
+}
+-->
+</script>
+</head>
+<body>
+<h3>CIW JavaScript Specialist</h3>
+<hr />
+<p>
+<a id="ChangeURL" href="http://www.microsoft.com">Microsoft</a>
+</p>
+<input type="button" onclick="changeLink()" value="Change Link" />
+</body>
+</html> 
