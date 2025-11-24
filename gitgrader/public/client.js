@@ -1,17 +1,26 @@
 // State management
 let currentResults = null;
 let currentTeamName = null;
+let currentReportPath = null;
+let currentTeamId = null;
+let currentClassId = null;
 let teams = [];
+let classes = [];
 
 // DOM Elements
 const teamsTab = document.getElementById('teams-tab');
+const classesTab = document.getElementById('classes-tab');
 const gradeTab = document.getElementById('grade-tab');
 const resultsTab = document.getElementById('results-tab');
 const teamsList = document.getElementById('teams-list');
+const classesList = document.getElementById('classes-list');
 const teamModal = document.getElementById('team-modal');
+const classModal = document.getElementById('class-modal');
 const teamForm = document.getElementById('team-form');
+const classForm = document.getElementById('class-form');
 const resultsContainer = document.getElementById('results-container');
 const selectTeam = document.getElementById('select-team');
+const selectClass = document.getElementById('select-class');
 
 // ==================== DATE HELPERS ====================
 
@@ -66,9 +75,11 @@ function getDefaultDateRange() {
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initTeamModal();
+    initClassModal();
     initGrading();
     initDateInputs();
     loadTeams();
+    loadClasses();
     loadConfig();
 });
 
@@ -80,6 +91,14 @@ function initDateInputs() {
     // Populate saved team date inputs
     document.getElementById('saved-start-date').value = defaults.startDate;
     document.getElementById('saved-end-date').value = defaults.endDate;
+    
+    // Populate class date inputs
+    document.getElementById('class-start-date').value = defaults.startDate;
+    document.getElementById('class-end-date').value = defaults.endDate;
+    
+    // Populate user grade date inputs
+    document.getElementById('user-start-date').value = defaults.startDate;
+    document.getElementById('user-end-date').value = defaults.endDate;
     
     // Populate manual grade date inputs
     document.getElementById('manual-start-date').value = defaults.startDate;
@@ -184,11 +203,181 @@ function updateTeamSelect(teams) {
         `).join('');
 }
 
+// ==================== CLASSES MANAGEMENT ====================
+
+async function loadClasses() {
+    try {
+        const response = await fetch('/api/classes');
+        const data = await response.json();
+        
+        if (data.success) {
+            classes = data.data;
+            renderClasses(classes);
+            updateClassSelect(classes);
+        } else {
+            showError('Failed to load classes: ' + data.error);
+        }
+    } catch (error) {
+        showError('Error loading classes: ' + error.message);
+    }
+}
+
+function renderClasses(classes) {
+    if (classes.length === 0) {
+        classesList.innerHTML = '<div class="empty-state">No classes yet. Click "Add New Class" to create one.</div>';
+        return;
+    }
+
+    classesList.innerHTML = classes.map(cls => `
+        <div class="team-card">
+            <div class="team-card-header">
+                <div class="team-name">${escapeHtml(cls.name)}</div>
+                <div class="team-actions">
+                    <button class="btn btn-success" onclick="gradeClass('${cls.id}')">Grade</button>
+                    <button class="btn btn-secondary" onclick="editClass('${cls.id}')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteClass('${cls.id}')">Delete</button>
+                </div>
+            </div>
+            <div class="team-info">
+                <div class="team-info-item">
+                    <span class="team-info-label">Created:</span>
+                    <span>${formatDate(cls.createdAt)}</span>
+                </div>
+                ${cls.lastGradingDate ? `
+                    <div class="team-info-item">
+                        <span class="team-info-label">Last Graded:</span>
+                        <span>${formatDate(cls.lastGradingDate)}</span>
+                    </div>
+                ` : ''}
+            </div>
+            <div class="team-students">
+                ${cls.usernames.map(username => `
+                    <span class="student-badge">${escapeHtml(username)}</span>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateClassSelect(classes) {
+    selectClass.innerHTML = '<option value="">Select a class...</option>' +
+        classes.map(cls => `
+            <option value="${cls.id}">${escapeHtml(cls.name)}</option>
+        `).join('');
+}
+
+// ==================== CLASS MODAL ====================
+
+function initClassModal() {
+    const addClassBtn = document.getElementById('add-class-btn');
+    const closeBtn = classModal.querySelector('.close');
+    const cancelBtn = document.getElementById('cancel-class-btn');
+
+    addClassBtn.addEventListener('click', () => openClassModal());
+    closeBtn.addEventListener('click', () => closeClassModal());
+    cancelBtn.addEventListener('click', () => closeClassModal());
+    
+    classForm.addEventListener('submit', handleClassSubmit);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === classModal) {
+            closeClassModal();
+        }
+    });
+}
+
+function openClassModal(cls = null) {
+    const modalTitle = document.getElementById('class-modal-title');
+    const classId = document.getElementById('class-id');
+    
+    if (cls) {
+        modalTitle.textContent = 'Edit Class';
+        classId.value = cls.id;
+        document.getElementById('class-name').value = cls.name;
+        document.getElementById('class-usernames').value = cls.usernames.join(', ');
+    } else {
+        modalTitle.textContent = 'Add New Class';
+        classId.value = '';
+        classForm.reset();
+    }
+    
+    classModal.classList.add('active');
+}
+
+function closeClassModal() {
+    classModal.classList.remove('active');
+    classForm.reset();
+}
+
+async function handleClassSubmit(e) {
+    e.preventDefault();
+    
+    const classId = document.getElementById('class-id').value;
+    const classData = {
+        name: document.getElementById('class-name').value,
+        usernames: document.getElementById('class-usernames').value,
+    };
+
+    try {
+        const url = classId ? `/api/classes/${classId}` : '/api/classes';
+        const method = classId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(classData),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            closeClassModal();
+            loadClasses();
+            showSuccess(classId ? 'Class updated successfully!' : 'Class created successfully!');
+        } else {
+            showError('Failed to save class: ' + (data.details ? data.details.join(', ') : data.error));
+        }
+    } catch (error) {
+        showError('Error saving class: ' + error.message);
+    }
+}
+
+async function editClass(id) {
+    const cls = classes.find(c => c.id === id);
+    if (cls) {
+        openClassModal(cls);
+    }
+}
+
+async function deleteClass(id) {
+    if (!confirm('Are you sure you want to delete this class?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/classes/${id}`, {
+            method: 'DELETE',
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            loadClasses();
+            showSuccess('Class deleted successfully!');
+        } else {
+            showError('Failed to delete class: ' + data.error);
+        }
+    } catch (error) {
+        showError('Error deleting class: ' + error.message);
+    }
+}
+
 // ==================== TEAM MODAL ====================
 
 function initTeamModal() {
     const addTeamBtn = document.getElementById('add-team-btn');
-    const closeBtn = document.querySelector('.close');
+    const closeBtn = teamModal.querySelector('.close');
     const cancelBtn = document.getElementById('cancel-team-btn');
 
     addTeamBtn.addEventListener('click', () => openTeamModal());
@@ -299,9 +488,13 @@ async function deleteTeam(id) {
 
 function initGrading() {
     const gradeSavedTeamBtn = document.getElementById('grade-saved-team-btn');
+    const gradeSavedClassBtn = document.getElementById('grade-saved-class-btn');
+    const userGradeForm = document.getElementById('user-grade-form');
     const manualGradeForm = document.getElementById('manual-grade-form');
 
     gradeSavedTeamBtn.addEventListener('click', handleGradeSavedTeam);
+    gradeSavedClassBtn.addEventListener('click', handleGradeSavedClass);
+    userGradeForm.addEventListener('submit', handleUserGrade);
     manualGradeForm.addEventListener('submit', handleManualGrade);
 }
 
@@ -334,6 +527,49 @@ async function handleGradeSavedTeam() {
         startDate,
         endDate
     }, team.name);
+}
+
+async function gradeClass(classId) {
+    switchTab('grade');
+    selectClass.value = classId;
+    await handleGradeSavedClass();
+}
+
+async function handleGradeSavedClass() {
+    const classId = selectClass.value;
+    
+    if (!classId) {
+        showError('Please select a class to grade');
+        return;
+    }
+
+    const cls = classes.find(c => c.id === classId);
+    if (!cls) {
+        showError('Class not found');
+        return;
+    }
+
+    // Get date range values
+    const startDate = document.getElementById('class-start-date').value;
+    const endDate = document.getElementById('class-end-date').value;
+
+    await performClassGrading({ 
+        classId,
+        startDate,
+        endDate
+    }, cls.name);
+}
+
+async function handleUserGrade(e) {
+    e.preventDefault();
+    
+    const data = {
+        username: document.getElementById('user-username').value,
+        startDate: document.getElementById('user-start-date').value,
+        endDate: document.getElementById('user-end-date').value,
+    };
+
+    await performUserGrading(data);
 }
 
 async function handleManualGrade(e) {
@@ -370,11 +606,14 @@ async function performGrading(data, teamName) {
         if (result.success) {
             currentResults = result.data.results;
             currentTeamName = result.data.teamName || teamName;
+            currentReportPath = result.data.reportPath || null;
+            currentTeamId = result.data.teamId || null;
+            currentClassId = null;
             
             progressDiv.style.display = 'none';
             switchTab('results');
             renderResults(currentResults, currentTeamName);
-            showSuccess('Grading completed successfully!');
+            showSuccess('Grading completed successfully! Report saved locally.');
         } else {
             progressDiv.style.display = 'none';
             showError('Grading failed: ' + result.error);
@@ -385,19 +624,97 @@ async function performGrading(data, teamName) {
     }
 }
 
+async function performUserGrading(data) {
+    const progressDiv = document.getElementById('grading-progress');
+    const progressDetail = document.getElementById('progress-detail');
+    
+    progressDiv.style.display = 'block';
+    progressDetail.textContent = 'Scanning all repositories...';
+
+    try {
+        const response = await fetch('/grade/user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            currentResults = result.data.results;
+            currentTeamName = `User: ${result.data.username}`;
+            currentReportPath = result.data.reportPath || null;
+            currentTeamId = null;
+            currentClassId = null;
+            
+            progressDiv.style.display = 'none';
+            switchTab('results');
+            renderResults(currentResults, currentTeamName);
+            showSuccess('User grading completed successfully! Report saved locally.');
+        } else {
+            progressDiv.style.display = 'none';
+            showError('User grading failed: ' + result.error);
+        }
+    } catch (error) {
+        progressDiv.style.display = 'none';
+        showError('Error during user grading: ' + error.message);
+    }
+}
+
+async function performClassGrading(data, className) {
+    const progressDiv = document.getElementById('grading-progress');
+    const progressDetail = document.getElementById('progress-detail');
+    
+    progressDiv.style.display = 'block';
+    progressDetail.textContent = 'Scanning all repositories...';
+
+    try {
+        const response = await fetch('/grade/class', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            currentResults = result.data.results;
+            currentTeamName = result.data.className || className;
+            currentReportPath = result.data.reportPath || null;
+            currentTeamId = null;
+            currentClassId = result.data.classId || null;
+            
+            progressDiv.style.display = 'none';
+            switchTab('results');
+            renderResults(currentResults, currentTeamName);
+            showSuccess('Class grading completed successfully! Report saved locally.');
+        } else {
+            progressDiv.style.display = 'none';
+            showError('Class grading failed: ' + result.error);
+        }
+    } catch (error) {
+        progressDiv.style.display = 'none';
+        showError('Error during class grading: ' + error.message);
+    }
+}
+
 // ==================== RESULTS ====================
 
 function renderResults(results, teamName) {
     const exportBtn = document.getElementById('export-html-btn');
     exportBtn.style.display = 'block';
-    exportBtn.onclick = () => exportHTML(results, teamName);
+    exportBtn.onclick = () => exportHTML();
+
+    const repoInfo = results.type === 'class' || results.type === 'user' 
+        ? `<p><strong>Repositories Scanned:</strong> ${results.repositories ? results.repositories.length : 'All owned repos'}</p>`
+        : `<p><strong>Repository:</strong> ${escapeHtml(results.repository)}</p>
+           <p><strong>Project:</strong> #${results.projectBoard}</p>`;
 
     resultsContainer.innerHTML = `
         <div class="results-summary">
             <h3>Grading Summary</h3>
-            <p><strong>Team:</strong> ${escapeHtml(teamName)}</p>
-            <p><strong>Repository:</strong> ${escapeHtml(results.repository)}</p>
-            <p><strong>Project:</strong> #${results.projectBoard}</p>
+            <p><strong>${results.type === 'class' ? 'Class' : results.type === 'user' ? 'User' : 'Team'}:</strong> ${escapeHtml(teamName)}</p>
+            ${repoInfo}
             <p><strong>Graded:</strong> ${formatDate(results.gradedAt)}</p>
             ${results.dateRange ? `
                 <p><strong>Date Range:</strong> ${new Date(results.dateRange.startDate).toLocaleDateString()} to ${new Date(results.dateRange.endDate).toLocaleDateString()}</p>
@@ -468,12 +785,32 @@ function renderStudent(student) {
     `;
 }
 
-async function exportHTML(results, teamName) {
+async function exportHTML() {
     try {
+        const requestBody = {};
+        
+        // Prefer teamId or classId if available, otherwise use reportPath
+        if (currentTeamId) {
+            requestBody.teamId = currentTeamId;
+        } else if (currentClassId) {
+            // For classes, we'll use reportPath since export endpoint doesn't support classes yet
+            if (currentReportPath) {
+                requestBody.reportPath = currentReportPath;
+            } else {
+                showError('No report available. Please re-grade the class.');
+                return;
+            }
+        } else if (currentReportPath) {
+            requestBody.reportPath = currentReportPath;
+        } else {
+            showError('No report available. Please re-grade.');
+            return;
+        }
+
         const response = await fetch('/export', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ results, teamName }),
+            body: JSON.stringify(requestBody),
         });
 
         if (response.ok) {
@@ -481,15 +818,27 @@ async function exportHTML(results, teamName) {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `grading-report-${Date.now()}.html`;
+            
+            // Extract filename from Content-Disposition header or use default
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = `grading-report-${Date.now()}.html`;
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1];
+                }
+            }
+            
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             
-            showSuccess('Report exported successfully!');
+            showSuccess('Report downloaded successfully!');
         } else {
-            showError('Failed to export report');
+            const errorData = await response.json();
+            showError('Failed to export report: ' + (errorData.error || 'Unknown error'));
         }
     } catch (error) {
         showError('Error exporting report: ' + error.message);

@@ -1,10 +1,10 @@
 {
   "rubric": {
     "issueAssigned": 10,
-    "commitsMade": 20,
-    "prCreated": 20,
-    "issueCompleted": 30,
-    "prMerged": 10,
+    "commitsMade": 10,
+    "prCreated": 10,
+    "issueCompleted": 40,
+    "prMerged": 20,
     "projectBoardWorkflow": 10
   },
   "projectBoardColumns": {

@@ -143,6 +143,11 @@ class ReportGenerator {
             background: #f1f8f4;
         }
 
+        .criterion.partial {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+
         .criterion.failed {
             border-left-color: #f44336;
             background: #fef5f5;
@@ -172,6 +177,10 @@ class ReportGenerator {
 
         .criterion.passed .criterion-status {
             background: #4CAF50;
+        }
+
+        .criterion.partial .criterion-status {
+            background: #ffc107;
         }
 
         .criterion.failed .criterion-status {
@@ -295,6 +304,15 @@ class ReportGenerator {
             border-left: 4px solid #ddd;
         }
 
+        .ai-repository {
+            padding: 4px 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            color: #2e7d32;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
         .ai-analysis-item.ai-passed {
             border-left-color: #4CAF50;
             background: #f1f8f4;
@@ -398,12 +416,22 @@ class ReportGenerator {
         <header>
             <h1>GitHub Grading Report</h1>
             <div class="meta-info">
-                <span><strong>Team:</strong> ${this.escapeHtml(teamName)}</span>
-                <span><strong>Repository:</strong> ${this.escapeHtml(results.repository)}</span>
-                <span><strong>Project:</strong> #${results.projectBoard}</span>
+                <span><strong>${results.type === 'class' ? 'Class' : results.type === 'user' ? 'User' : 'Team'}:</strong> ${this.escapeHtml(teamName)}</span>
+                ${results.type === 'class' || results.type === 'user' 
+                    ? `<span><strong>Repositories Scanned:</strong> ${results.repositories ? results.repositories.length : 'All owned repos'}</span>`
+                    : `<span><strong>Repository:</strong> ${this.escapeHtml(results.repository)}</span>
+                       <span><strong>Project:</strong> #${results.projectBoard}</span>`}
                 <span><strong>Graded:</strong> ${new Date(results.gradedAt).toLocaleString()}</span>
                 ${results.dateRange ? `<span><strong>Date Range:</strong> ${new Date(results.dateRange.startDate).toLocaleDateString()} to ${new Date(results.dateRange.endDate).toLocaleDateString()}</span>` : ''}
             </div>
+            ${results.repositories && results.repositories.length > 0 ? `
+                <div style="margin-top: 15px; padding: 10px; background: #f0f4ff; border-radius: 4px;">
+                    <strong>Repositories Scanned:</strong>
+                    <ul style="margin: 10px 0 0 20px; columns: 2; column-gap: 20px;">
+                        ${results.repositories.map(repo => `<li>${this.escapeHtml(repo)}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
         </header>
 
         ${this.generateStatistics(results.statistics)}
@@ -479,7 +507,7 @@ class ReportGenerator {
                         <div class="issues-title">Assigned Issues:</div>
                         ${student.issues.map(issue => `
                             <a href="${issue.url}" class="issue-link" target="_blank">
-                                #${issue.number}: ${this.escapeHtml(issue.title)} (${issue.state})
+                                ${issue.repository ? `${this.escapeHtml(issue.repository)} ` : ''}#${issue.number}: ${this.escapeHtml(issue.title)} (${issue.state})
                             </a>
                         `).join('')}
                     </div>
@@ -521,6 +549,7 @@ class ReportGenerator {
             ${analyses.map(analysis => `
                 <div class="ai-analysis-item ${analysis.passed ? 'ai-passed' : 'ai-failed'}">
                     <div class="ai-analysis-header">
+                        ${analysis.repository ? `<span class="ai-repository">${this.escapeHtml(analysis.repository)}</span>` : ''}
                         <span class="ai-issue-number">Issue #${analysis.issue}</span>
                         ${analysis.pr ? `<span class="ai-pr-number">PR #${analysis.pr}</span>` : ''}
                         <span class="ai-result ${analysis.passed ? 'ai-result-pass' : 'ai-result-fail'}">
@@ -544,13 +573,35 @@ class ReportGenerator {
 
   /**
    * Generate criterion card
+   * Color coding:
+   * - Green (passed): 80% or more points earned
+   * - Yellow (partial): 1% to 79% points earned
+   * - Red (failed): 0% points earned
    */
   generateCriterion(criterion) {
+    const percentage = criterion.maxPoints > 0 
+      ? (criterion.points / criterion.maxPoints) * 100 
+      : 0;
+    
+    let statusClass;
+    let statusIcon;
+    
+    if (percentage >= 80) {
+      statusClass = 'passed';
+      statusIcon = '✓';
+    } else if (percentage > 0) {
+      statusClass = 'partial';
+      statusIcon = '⚠';
+    } else {
+      statusClass = 'failed';
+      statusIcon = '✗';
+    }
+    
     return `
-        <div class="criterion ${criterion.passed ? 'passed' : 'failed'}">
+        <div class="criterion ${statusClass}">
             <div class="criterion-name">${this.escapeHtml(criterion.name)}</div>
             <div class="criterion-score">${criterion.points}/${criterion.maxPoints}</div>
-            <div class="criterion-status">${criterion.passed ? '✓' : '✗'}</div>
+            <div class="criterion-status">${statusIcon}</div>
         </div>
     `;
   }
@@ -561,6 +612,12 @@ class ReportGenerator {
   generateRubric(criteria) {
     if (!criteria) return '';
 
+    // Calculate total max score from all criteria
+    const totalMaxScore = Object.values(criteria).reduce(
+      (sum, criterion) => sum + (criterion.maxPoints || 0),
+      0
+    );
+
     return `
         <div class="rubric">
             <h2>Grading Rubric</h2>
@@ -569,24 +626,32 @@ class ReportGenerator {
                     <tr>
                         <th>Criterion</th>
                         <th>Points</th>
+                        <th>Percentage</th>
                         <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${Object.entries(criteria)
                       .map(
-                        ([key, criterion]) => `
+                        ([key, criterion]) => {
+                          const percentage = totalMaxScore > 0 
+                            ? ((criterion.maxPoints / totalMaxScore) * 100).toFixed(1)
+                            : '0.0';
+                          return `
                         <tr>
                             <td><strong>${this.escapeHtml(criterion.name)}</strong></td>
                             <td>${criterion.maxPoints}</td>
+                            <td>${percentage}%</td>
                             <td>${this.escapeHtml(criterion.feedback)}</td>
                         </tr>
-                    `
+                    `;
+                        }
                       )
                       .join('')}
                     <tr style="background: #f8f9fa; font-weight: 600;">
                         <td>Total</td>
-                        <td>100</td>
+                        <td>${totalMaxScore}</td>
+                        <td>100.0%</td>
                         <td>Maximum possible score</td>
                     </tr>
                 </tbody>

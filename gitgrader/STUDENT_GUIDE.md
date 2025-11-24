@@ -2,9 +2,16 @@
 
 This guide explains exactly what you need to do to get the best possible score when your work is graded by the GitHub Grading Bot.
 
+## Two Types of Grading
+
+The grading bot can grade your work in two different ways:
+
+1. **Team Grading (Single Repository)**: Your work is graded within one specific repository. Maximum score: **100 points**.
+2. **Individual/Class Grading (Multiple Repositories)**: Your work is graded across all repositories owned by your instructor. Maximum score: **90 points** (Project Board Workflow is not checked).
+
 ## Overview of Grading Criteria
 
-Your work is graded on **100 points** total, broken down as follows:
+### Team Grading (100 points total)
 
 | Criterion | Points | What It Measures |
 |-----------|--------|------------------|
@@ -14,6 +21,21 @@ Your work is graded on **100 points** total, broken down as follows:
 | **Issue Completed** | 30 | AI verification that your work actually solves the issue |
 | **Pull Request Merged** | 10 | Your pull request was accepted and merged |
 | **Project Board Workflow** | 10 | You moved the issue through all workflow columns |
+
+### Individual/Class Grading (90 points total)
+
+| Criterion | Points | What It Measures |
+|-----------|--------|------------------|
+| **Issue Assigned** | 10 | You assigned at least one issue to yourself (waived for docpacs repos) |
+| **Commits Made** | 20 | You made commits that address the issue |
+| **Pull Request Created** | 20 | You created a pull request for your changes |
+| **Issue Completed** | 30 | AI verification that your work actually solves the issue |
+| **Pull Request Merged** | 10 | Your pull request was accepted and merged |
+| **Project Board Workflow** | 0 | Not checked for individual grading across multiple repos |
+
+**Important Notes:**
+- If you're working in a repository whose name starts with **"docpacs"** (e.g., `docpacs2526`, `docpacs2425`), the **Issue Assigned** criterion is automatically waived - you'll get full points even if you didn't assign the issue to yourself.
+- When graded individually across multiple repos, the **Project Board Workflow** criterion is skipped (you can't get those 10 points, but you also can't lose them).
 
 ## Step-by-Step Guide to Maximum Points
 
@@ -27,15 +49,19 @@ Follow these steps **in order** to ensure you get full credit:
 3. **Assign it to yourself** by clicking on "Assignees" and selecting your username
 4. Write a **clear, detailed description** of what needs to be done
 
+**Special Exception for docpacs Repositories:**
+- If you're working in a repository whose name starts with **"docpacs"** (e.g., `docpacs2526`, `docpacs2425`), you **do NOT need to assign the issue to yourself**. The grading bot will automatically give you full points for this criterion.
+- However, it's still a good practice to assign issues to yourself for clarity!
+
 **Best Practices:**
 - ✅ Use a descriptive title (e.g., "Fix login button alignment" not "fix bug")
 - ✅ Include specific details about what needs to be done
-- ✅ Make sure the issue is assigned to YOU (your GitHub username)
+- ✅ Make sure the issue is assigned to YOU (your GitHub username) - unless working in a docpacs repo
 - ✅ Do this BEFORE making any changes to the code
 
 **Common Mistakes:**
 - ❌ Starting work before creating/assigning the issue
-- ❌ Forgetting to assign the issue to yourself
+- ❌ Forgetting to assign the issue to yourself (not required for docpacs repos, but still recommended)
 - ❌ Using vague descriptions like "make it better"
 
 ### Step 2: Move Issue to "In Progress" (Part of Project Board Workflow)
@@ -48,6 +74,8 @@ Follow these steps **in order** to ensure you get full credit:
 **Why this matters:**
 - The grading bot tracks your issue's movement through the workflow columns
 - You need to move it through: **To Do → In Progress → Done**
+
+**Important:** This step is **only required for Team Grading** (single repository). If you're being graded individually across multiple repositories, the Project Board Workflow criterion is **not checked**, so you can skip this step and Step 7. However, it's still good practice to use project boards!
 
 ### Step 3: Make Your Code Changes & Commit (20 points)
 
@@ -200,6 +228,8 @@ The AI doesn't just compare the issue description with the PR description. It ac
 **Important:**
 - The grading bot checks that your issue went through: **To Do → In Progress → Done**
 - All three columns must be visited to get full credit
+- **This step is ONLY required for Team Grading** (single repository grading)
+- **If you're being graded individually across multiple repositories, this criterion is skipped** - you won't get these 10 points, but you also can't lose them (max score is 90 instead of 100)
 
 **Common Mistakes:**
 - ❌ Only moving the issue once (e.g., To Do → Done, skipping In Progress)
@@ -225,7 +255,8 @@ The AI doesn't just compare the issue description with the PR description. It ac
 
 Before you consider your work "done", check all of these:
 
-- [ ] Issue is created and assigned to me
+**For Team Grading (Single Repository - 100 points):**
+- [ ] Issue is created and assigned to me (unless working in a docpacs repo)
 - [ ] Issue has a clear, detailed description
 - [ ] Issue was added to the project board in "To Do"
 - [ ] I moved the issue to "In Progress" when I started working
@@ -238,6 +269,19 @@ Before you consider your work "done", check all of these:
 - [ ] My pull request was reviewed and merged
 - [ ] I moved the issue to "Done" after merging
 - [ ] All of this was done within the current grading period
+
+**For Individual/Class Grading (Multiple Repositories - 90 points):**
+- [ ] Issue is created (assignment not required for docpacs repos)
+- [ ] Issue has a clear, detailed description
+- [ ] I created a branch for my work
+- [ ] I made meaningful commits that reference the issue number
+- [ ] I pushed my commits to GitHub
+- [ ] I created a pull request that references the issue
+- [ ] My PR description explains what I changed
+- [ ] My code changes actually solve the problem described in the issue
+- [ ] My pull request was reviewed and merged
+- [ ] All of this was done within the current grading period
+- [ ] Note: Project board workflow is not checked for individual grading
 
 ## Common Scenarios
 
@@ -273,11 +317,19 @@ Before you consider your work "done", check all of these:
 - You didn't move the issue through all three columns
 - Your project board uses different column names
 - You moved the issue too quickly (e.g., To Do → Done)
+- **Note:** If you're being graded individually across multiple repos, this criterion is skipped (max score is 90, not 100)
 
 **Solution:**
 - Verify your board has columns named "To Do", "In Progress", and "Done"
 - Make sure you move the issue as you work (not all at once at the end)
 - Check the project board history to see which columns you actually used
+- If you're being graded individually, remember that 90/90 is a perfect score (Project Board Workflow is not checked)
+
+### Scenario 4: "I'm working in a docpacs repo - do I need to assign issues?"
+
+**Answer:**
+- **No!** If you're working in a repository whose name starts with "docpacs" (e.g., `docpacs2526`), you automatically get full points for the "Issue Assigned" criterion, even if you don't assign the issue to yourself.
+- However, it's still good practice to assign issues for clarity and organization.
 
 ## Tips for Success
 
@@ -303,7 +355,8 @@ If you're having trouble getting a good score:
 
 Getting a perfect score is straightforward if you follow these steps:
 
-1. **Create** a detailed issue and **assign** it to yourself
+### For Team Grading (100 points):
+1. **Create** a detailed issue and **assign** it to yourself (unless in a docpacs repo)
 2. **Move** it to "In Progress" on the project board
 3. **Make** meaningful commits that reference the issue
 4. **Create** a pull request that describes your changes
@@ -312,4 +365,18 @@ Getting a perfect score is straightforward if you follow these steps:
 7. **Move** the issue to "Done" on the project board
 
 Do all of this within the grading period, and you'll get 100/100! 🎉
+
+### For Individual/Class Grading (90 points):
+1. **Create** a detailed issue (assignment not required for docpacs repos)
+2. **Make** meaningful commits that reference the issue
+3. **Create** a pull request that describes your changes
+4. **Ensure** your work actually solves the stated problem
+5. **Get** your pull request reviewed and merged
+
+Do all of this within the grading period, and you'll get 90/90! 🎉
+
+**Remember:**
+- Working in a **docpacs** repository? Issue assignment is automatically waived.
+- Being graded **individually across multiple repos**? Project Board Workflow is not checked (max score is 90).
+- Being graded as a **team in a single repo**? Follow all 7 steps for a perfect 100/100.
 
