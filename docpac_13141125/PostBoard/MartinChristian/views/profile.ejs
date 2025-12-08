@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indeedbar | User Profile</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+    </script>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin-left: 10px;
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    #mainTitle {
+        display: inline-block;
+        width: 50%;
+    }
+
+    #loginInfo {
+        display: inline-block;
+        text-align: right;
+        width: 45%;
+        margin-left: 50px;
+    }
+
+    #logoutButton {
+        margin-left: 10px;
+        padding: 5px 10px;
+        border: solid 1px #ccc;
+        border-radius: 5px;
+        width: 100px;
+        height: 30px;
+        cursor: pointer;
+        background-color: #333;
+        color: #ffffff;
+    }
+
+    #backButton {
+        display: inline-flex;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-left: 10px;
+        background-color: #333;
+        color: #ffffff;
+    }
+
+    #header {
+        display: inline-flex;
+    }
+
+    .post {
+        border: solid 1px #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #222;
+    }
+
+    .delete_editButtons {
+        margin-top: 10px;
+        padding: 5px 10px;
+        border: solid 1px #ccc;
+        border-radius: 5px;
+        width: 120px;
+        height: 30px;
+        cursor: pointer;
+        background-color: #333;
+        color: #ffffff;
+    }
+
+    .post-id {
+        display: inline-flex;
+        font-size: 12px;
+        color: #888;
+        margin-left: 77%;
+    }
+</style>
+</head>
+
+<body>
+    <h1 id="mainTitle">Indeedbar.com</h1>
+    <div id="loginInfo">
+        Logged in as <%- user -%>
+            <button onclick="window.location.href='/logout'" id="logoutButton">Logout</button>
+    </div>
+    <h2 id="header">Posts made by: <%- profileUser -%></h2>
+    <button id="backButton" onclick="window.location.href='/view'">Back</button>
+    <div id="listingsContainer"></div>
+</body>
+<script>
+    function siteLoop() {
+        const posts = JSON.parse('<%- JSON.stringify(posts) %>');
+        const container = document.getElementById('listingsContainer');
+        const username = window.location.pathname.split('/').pop();
+        posts.reverse();
+
+        posts.forEach(post => {
+            if (!document.getElementById(`post-${post.id}`)) {
+                const postElement = document.createElement('div');
+                postElement.classList = 'post'
+                postElement.id = `post-${post.id}`;
+                postElement.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p><strong>Company:</strong> ${post.company}</p>
+                    <p>${post.description}</p>
+                    <p><em>Posted by <b>${post.username}</b> at: ${new Date(post.created_at).toLocaleString()}</em></p>
+                    `;
+                if (post.username === `<%- user -%>`) {
+                    const deleteButton = document.createElement('button');
+                    const editButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete Post';
+                    editButton.textContent = 'Edit Post';
+                    deleteButton.classList.add('delete_editButtons');
+                    editButton.classList.add('delete_editButtons');
+
+                    deleteButton.onclick = () => {
+                        socket.emit('deletePost', { postId: post.id });
+                        window.location.reload();
+                    };
+
+                    editButton.onclick = () => {
+                        window.location.href = `/edit/${post.id}`;
+                    };
+
+
+                    postElement.appendChild(deleteButton);
+                    postElement.appendChild(editButton);
+                }
+
+                const commentsButton = document.createElement('button');
+                commentsButton.textContent = 'View Comments';
+                commentsButton.classList.add('delete_editButtons');
+                commentsButton.onclick = () => {
+                    window.location.href = `/comments/${post.id}`;
+                };
+                postElement.appendChild(commentsButton);
+
+                const postIdDiv = document.createElement('div');
+                postIdDiv.classList.add('post-id');
+                postIdDiv.textContent = `Post ID: ${post.id}`;
+                postElement.appendChild(postIdDiv);
+                console.log(postElement);
+                container.appendChild(postElement);
+            }
+        });
+        requestAnimationFrame(siteLoop);
+    }
+
+    siteLoop();
+</script>
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .comtitle{
+        text-decoration: underline;
+        color:black;
+        background-color: limegreen;
+    } 
+</style>
+<body>
+    <h1>
+        ALL JOB POSTINGS WILL BE DISPLAYED HERE!
+    </h1>
+    <form name="commentform" action="/allpost" method="POST">
+        <input type="text" id="commentinput" name="commentmaker" placeholder="Comment here" required>
+        <button type="submit">(Include name and date for context pls) Click to post comment</button>
+    </form>
+    <br>
+    <a href="/">Create a New Post</a>
+    <div id="postings">
+    </div>
+    <div id="commentssection">
+        <h2 class="comtitle">Comments Section</h2>
+    </div>
+</body>
+<script>
+    const postingsDiv = document.getElementById('postings');
+    const cpostingsDiv = document.getElementById('commentssection');
+    cpostElement = document.createElement('div');
+    postElement = document.createElement('div');
+    <% newestpost.forEach(function(post) { %>
+        ipostElement = document.createElement('div');
+        ipostElement.innerHTML = `<h2><%= post.job %></h2><a href="/userprof">Posted by
+            <%= post.username %> on <%= post.timestamps %></a>`;
+        postElement.appendChild(ipostElement);
+        postingsDiv.appendChild(postElement);  
+<% }); %>
+
+<% commentpost.forEach(function(comment) { %>
+        icpostElement = document.createElement('div');
+        icpostElement.innerHTML = `<h2><%= comment.comment %></h2><a href="/userprof">Posted by
+            <%= comment.username %> on <%= comment.timestamp %></a>`;
+        cpostElement.appendChild(icpostElement);
+        cpostingsDiv.appendChild(cpostElement);  
+<% }); %>
+
+
+</script>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 10-1</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+	<form name="myForm" id="myForm" action="https://www.ciwcertified.com/" method="get">
+		  <label><b>Name</b></label>
+		  <input type="text" placeholder="FirstName" name="fname" required> 
+		  <input type="text" placeholder="LastName" name="lname" required> <br>
+		  <label><b>EMail</b></label>
+		  <input type="email" placeholder="Enter Email ID" name="email" required> <br>
+		  <label><b>Password</b></label>
+		  <input type="password" placeholder="Enter Password" name="pwd" required> <br>
+		  <label><b>Gender</b></label>
+		  <input type="radio" name="gen" value="male">Male
+		  <input type="radio" name="gen" value="female">Female <br>
+		  <input type="submit" value="Submit">
+		  <input type="reset" value="Reset">
+		</form>
+		<script>
+			document.forms["myForm"].elements["pwd"].maxLength = 10;
+			document.forms['myForm'].elements['Submit'].onclick = function() {
+			const fname = document.forms['myForm'].elements['fname'].trim();
+			if (fname === "") {
+				alert("First Name must be filled out");
+				return false;
+			}
+		};
+		</script>
+	</body>
+</html>

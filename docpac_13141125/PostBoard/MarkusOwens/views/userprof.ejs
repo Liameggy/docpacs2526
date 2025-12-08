@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%= userprof.uid %> is your id
+    <form action="/userprof" method="POST">
+        <input type="text" name="useridtofind" placeholder="Enter id to find">
+        <button type="submit">Display posts</button>
+    </form>
+    <div id="postings">
+    </div>
+    <a href="/">Back to newpost</a>
+</body>
+<script>
+    alert("You may have to click the button twice to see posts appear make sure to enter your user id everytime currently uid 0 , 1 and ,2 have posts");
+const postingsDiv = document.getElementById('postings');
+postElement = document.createElement('div');
+    <% newestpost.forEach(function(post) { %>
+        ipostElement = document.createElement('div');
+        ipostElement.innerHTML = `<h2><%= post.job %></h2><a href="/userprof">Posted by
+            <%= post.username %> on <%= post.timestamps %></a>`;
+        postElement.appendChild(ipostElement);
+        postingsDiv.appendChild(postElement);  
+<% }); %>
+</script>
+</html>

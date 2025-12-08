@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE JOB FOR BARS o' gold</title>
+</head>
+<body>
+    <h1>DO YOU WANT TO MAKE A JOB POSTING?</h1>
+    <p>Hallo!!!, <%= user %>!</p> 
+    <form name=jober action="/" method="POST">
+        <label for="jobTitle">Job and description:</label>
+        <input type="text" id="userpost" name="jobposter" required>
+
+        <button type="submit">Create Job Posting</button>
+    </form>
+<a href="/allpost">View All Job Postings</a>
+<br>
+<a href="/userprof">View Your Profile</a>
+
+</body>
+<script>
+</script>
+</html>

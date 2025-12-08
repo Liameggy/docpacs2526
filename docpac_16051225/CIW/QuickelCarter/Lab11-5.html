@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 11-5</title>
+		<style>
+		  button { margin: 5px; padding: 10px; }
+		  #output { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+		</style>
+
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h3>Web Developer Ethics & Privacy Lab</h3>
+
+		<p>Click a topic below to learn more and reflect:</p>
+
+		<button id="ethicsBtn">Ethical Behavior for Web Professionals</button>
+		<button id="privacyBtn">Privacy and trust, how one complements the other</button>
+		<button id="fairUseBtn">Fair use of user data</button>
+		<button id="lawsBtn">Laws against privacy relations</button>
+		<button id="intellectualBtn">Intellectual property rights</button>
+
+
+
+		<div id="output"></div>
+
+		<script>
+		  const output = document.getElementById('output');
+
+		  const topics = {
+			ethics: "Ensures that web professionals adhere to moral principles and standards in their work, promoting honesty, integrity, and respect for users.",
+			privacy: "The right of individuals to control their personal information and how it is collected, used, and shared online.",
+			fairUse: "Allows limited use of copyrighted material without permission.",
+			laws: "Regulations that govern the use of technology and the internet to protect users and ensure ethical behavior.",
+			intellectual: "Legal rights that protect creations of the mind, such as inventions, literary works, and designs."
+		  };
+
+		  document.getElementById('ethicsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Ethical Behavior</h3><p>${topics.ethics}</p>`;
+		  });
+		  document.getElementById('privacyBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Privacy and Trust</h3><p>${topics.privacy}</p>`;
+		  });
+		  document.getElementById('fairUseBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Fair Use of User Data</h3><p>${topics.fairUse}</p>`;
+		  });
+		  document.getElementById('lawsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Laws Against Privacy Violations</h3><p>${topics.laws}</p>`;
+		  });
+		  document.getElementById('intellectualBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Intellectual Property Rights</h3><p>${topics.intellectual}</p>`;
+		  });
+
+
+		</script>
+
+	</body>
+</html>

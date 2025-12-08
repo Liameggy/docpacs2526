@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lab 10-1</title>
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+
+	<form name="myForm" id="myForm">
+		<label><b>Name</b></label>
+		<input type="text" placeholder="FirstName" name="fname" required>
+		<input type="text" placeholder="LastName" name="lname" required> <br>
+		<label><b>Email</b></label>
+		<input type="text" placeholder="Enter Email ID" name="email" required> <br>
+		<label><b>Password</b></label>
+		<input type="password" placeholder="Enter Password" name="pwd" maxLength="10" required> <br>
+		<label><b>Gender</b></label>
+		<input type="radio" name="gen" value="male">Male
+		<input type="radio" name="gen" value="female">Female <br>
+		<input type="submit" value="Submit">
+		<input type="reset" value="Reset">
+	</form>
+
+</body>
+<script>
+	document.getElementById("myForm").onsubmit = function () {
+		firstName = document.getElementById("myForm")["fname"];
+		email = document.getElementById("myForm")["email"];
+		let nameCheck = false;
+		let emailCheck = false;
+		while (firstName.value[0] == " ") {
+			firstName.value = firstName.value.substring(1);
+		}
+		while (firstName.value[firstName.value.length - 1] == " ") {
+			firstName.value = firstName.value.substring(0, firstName.value.length - 1);
+		}
+		if (firstName.value == "" || firstName.value == null || firstName.value == undefined) {
+			alert("Name is required to access the assignments page");
+			event.preventDefault();
+		} else {
+			nameCheck = true;
+		}
+
+		for (const char of email.value) {
+			if (char == "@") {
+				emailCheck = true;
+				break;
+			}
+		}
+
+		if (!emailCheck) {
+			alert("Please enter a valid email ID");
+			event.preventDefault();
+		}
+
+		if (nameCheck && emailCheck) {
+			window.location.href = 'https://ciwcertified.com';
+		}
+	};
+</script>
+
+</html>

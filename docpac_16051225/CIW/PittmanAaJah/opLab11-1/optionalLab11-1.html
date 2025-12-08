@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title> Optional Lab 11-1: Cookie Redirect</title>
+
+<script type="text/javascript">
+<!--
+var go_to = "http://www.CIWcertified.com";
+
+// number of days cookie lives for
+var num_days = 60;
+function ged(noDays){
+    var today = new Date();
+    var expr = new Date(today.getTime() + noDays*24*60*60*1000);
+    return  expr.toGMTString();
+}
+
+function readCookie(MyCookie){
+    var start = document.cookie.indexOf(MyCookie);
+    if (start == -1){ 
+        document.cookie = "RedirectCookie=yes; expires=" + ged(num_days);
+    } else {
+        window.location = go_to;
+    }
+}
+
+readCookie("RedirectCookie");
+// -->
+</script>
+
+</head>
+
+<body onload="readCookie('MyCookie')">
+<h3>CIW JavaScript Specialist</h3>
+<hr />
+Cookie not active yet!
+</body>
+</html>

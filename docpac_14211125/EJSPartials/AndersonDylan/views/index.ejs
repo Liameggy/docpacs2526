@@ -1,0 +1,9 @@
+<%- include('partials/head.ejs') %>
+<body>
+    <h1>Welcome to the Home Page</h1>
+    <p>This is a sample paragraph to demonstrate the included head and foot partials.</p>
+    <% if (viewport === "online") { %>
+        <button onclick="window.location='/print'">Print</button>
+    <% } %>
+</body>
+<%- include('partials/foot.ejs') %>

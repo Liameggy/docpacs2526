@@ -1,0 +1,19 @@
+<%- include('./partials/head.ejs')  %>
+
+<body>
+    <header>
+        <h1>THIS MY EJS PAGE SMITH</h1>
+    </header>
+    <main>
+        <p>SOME RANDOM STUFF ABOUT EJS</p>
+    </main>
+    <footer>
+        <p>&copy; 2050 idk</p>
+    </footer>
+    <% if (viewport === "online") { %>
+        <button onclick="window.location='/print'">Print</button>
+        <% } %>
+        
+</body>
+
+<%- include('./partials/foot.ejs') %>

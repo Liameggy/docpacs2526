@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 10-1</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<form name="myForm" id="myForm">
+		  <label><b>Name</b></label>
+		  <input type="text" placeholder="FirstName" name="fname"> 
+		  <input type="text" placeholder="LastName" name="lname" required> <br>
+		  <label><b>Email</b></label>
+		  <input type="email" placeholder="Enter Email ID" name="email" required> <br>
+		  <label><b>Password</b></label>
+		  <input type="password" placeholder="Enter Password" name="pwd" required maxlength="10"> <br>
+		  <label><b>Gender</b></label>
+		  <input type="radio" name="gen" value="male">Male
+		  <input type="radio" name="gen" value="female">Female <br>
+		  <input type="submit" value="Submit" id="submitBtn">
+		  <input type="reset" value="Reset">
+		</form>
+
+	</body>
+	<script>
+		document.getElementById("submitBtn").addEventListener("click", () => {
+			name()
+		})
+		function name(){
+			const fname = document.getElementById("myForm").fname.value
+			const trimname = fname.trim()
+			if (trimname.length === 0){
+				alert("Name is required to access the assignments page")
+			}
+			else {
+				window.location.href = "https://ciwcertified.com"
+			}
+		}
+	</script>
+</html>

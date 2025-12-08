@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 11-5</title>
+		<style>
+		  button { margin: 5px; padding: 10px; }
+		  #output { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+		</style>
+
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h3>Web Developer Ethics & Privacy Lab</h3>
+
+		<p>Click a topic below to learn more and reflect:</p>
+
+		<button id="ethicsBtn">Ethical Behavior for Web Professionals</button>
+		<button id="privacyBtn">User Privacy and Data Protection</button>
+		<button id="fairUseBtn">Fair Use and Copyright Considerations</button>
+		<button id="lawsBtn">Legal Responsibilities of Web Developers</button>
+		<button id="intellectualBtn">Intellectual Property Rights</button>
+
+
+
+		<div id="output"></div>
+
+		<script>
+		  const output = document.getElementById('output');
+
+		  const topics = {
+			ethics: "behaving good on the internet.",
+			privacy: "respecting the people who are using your site and keeping their data private.",
+			fairUse: "Something that is allowed to be used by anyone.",
+			laws: "Laws that regulate how society runs.",
+			intellectual: "how smart someone is.."
+		  };
+
+		  document.getElementById('ethicsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Ethical Behavior</h3><p>${topics.ethics}</p>`;
+		  });
+		  document.getElementById('privacyBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>User Privacy</h3><p>${topics.privacy}</p>`;
+		  });
+		  document.getElementById('fairUseBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Fair Use</h3><p>${topics.fairUse}</p>`;
+		  });
+		  document.getElementById('lawsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Legal Responsibilities</h3><p>${topics.laws}</p>`;
+									  });
+		  document.getElementById('intellectualBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Intellectual Property Rights</h3><p>${topics.intellectual}</p>`;
+		  });
+
+
+
+		</script>
+
+	</body>
+</html>

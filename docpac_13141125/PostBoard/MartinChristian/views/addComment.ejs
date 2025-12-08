@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indeedbar | Add Comment</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-left: 10px;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        #mainTitle {
+            display: inline-block;
+            width: 50%;
+        }
+
+        #loginInfo {
+            display: inline-block;
+            text-align: right;
+            width: 45%;
+            margin-left: 50px;
+        }
+
+        #logoutButton {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            width: 100px;
+            height: 30px;
+            cursor: pointer;
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        #backButton {
+            display: inline-flex;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        #header {
+            display: inline-flex;
+        }
+
+        #listingsContainer {
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #222;
+        }
+        .inputFields {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            background-color: #222;
+            color: #ffffff;
+        }
+        #submitButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="mainTitle">Indeedbar.com</h1>
+    <div id="loginInfo">
+        Logged in as <%- user -%>
+            <button onclick="window.location.href='/logout'" id="logoutButton">Logout</button>
+    </div>
+    <h2 id="header">Listing:</h2>
+    <button onclick="window.location.href='/view'" id="backButton">Back</button>
+    <div id="listingsContainer">
+        <h3>
+            <%= post.title %>
+        </h3>
+        <p><strong>Company:</strong>
+            <%= post.company %>
+        </p>
+        <p>
+            <%= post.description %>
+        </p>
+        <p><em>Posted by <b>
+                    <%= post.username %>
+                </b> at: <%= new Date(post.created_at).toLocaleString() %></em></p>
+    </div>
+    <h2 id="header">Add Comment:</h2>
+    <div id="addCommentSection">
+        <form id="commentForm" action="/submitComment" method="POST">
+            <label for="comment">Add your comment:</label><br>
+            <textarea class='inputFields' id="comment" name="comment" rows="4" cols="50"
+                placeholder="Enter your comment here..." required></textarea><br>
+                <input type="hidden" id="postId" name="postId" value="<%= post.id %>">
+            <button type="submit" id="submitButton">Submit</button>
+        </form>
+    </div>
+</body>
+<script>
+    const post = JSON.parse('<%- JSON.stringify(post) %>');
+    const postId = window.location.pathname.split('/').pop();
+    const commentText = document.getElementById('comment').value;
+
+</script>
+
+</html>

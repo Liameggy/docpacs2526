@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indeedbar | Comments</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-left: 10px;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        #mainTitle {
+            display: inline-block;
+            width: 50%;
+        }
+
+        #loginInfo {
+            display: inline-block;
+            text-align: right;
+            width: 45%;
+            margin-left: 50px;
+        }
+
+        #logoutButton {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            width: 100px;
+            height: 30px;
+            cursor: pointer;
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        #backButton {
+            display: inline-flex;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        #header {
+            display: inline-flex;
+        }
+
+        #listingsContainer {
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #222;
+        }
+
+        .comment {
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #222;
+        }
+
+        .delete_editButtons {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            width: 120px;
+            height: 30px;
+            cursor: pointer;
+            background-color: #333;
+            color: #ffffff;
+        }
+        .link {
+        color: #ffffff;
+        text-decoration: underline;
+        cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="mainTitle">Indeedbar.com</h1>
+    <div id="loginInfo">
+        Logged in as <%- user -%>
+            <button onclick="window.location.href='/logout'" id="logoutButton">Logout</button>
+    </div>
+    <h2 id="header">Listing:</h2>
+    <button onclick="window.location.href='/view'" id="backButton">Back</button>
+    <div id="listingsContainer">
+        <h3</h3>
+        <p><strong>Company:</strong></p>
+        <p></p>
+        <p><em></em></p>
+    </div>
+    <h2>Comments:</h2>
+    <button class='delete_editButtons' id="addComment" onclick="window.location.href='/addComment/<%= post.id %>'">Add Comment</button>
+
+    <div id="commentsContainer"></div>
+</body>
+<script>
+    function siteLoop() {
+        const comments = JSON.parse('<%- JSON.stringify(comments) %>');
+        const container = document.getElementById('commentsContainer');
+        const post = JSON.parse('<%- JSON.stringify(post) %>');
+        const postOwner = post.username;
+        const postId = post.id;
+        const postTitle = post.title;
+        const postDescription = post.description;
+        const postCompany = post.company;
+
+        // Display post details
+        const listingsContainer = document.getElementById('listingsContainer');
+        listingsContainer.innerHTML = `
+            <h3>${postTitle}</h3>
+            <p><strong>Company:</strong> ${postCompany}</p>
+            <p>${postDescription}</p>
+            <p><em>Posted by: <a class='link' href='/profile/${post.username}'>${post.username}</a></em></p>
+        `;
+
+        comments.forEach(comment => {
+            if (!document.getElementById(`comment-${comment.id}`)) {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+                commentElement.id = `comment-${comment.id}`;
+                commentElement.innerHTML = `
+                    <p><strong><a class='link' href='/profile/${comment.username}'>${comment.username}</a> ${comment.content}</p>
+                `;
+                if (comment.username === `<%- user %>` || postOwner === `<%- user %>`) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('delete_editButtons');
+
+                    deleteButton.onclick = () => {
+                        socket.emit('deleteComment', { commentId: comment.id });
+                        window.location.reload();
+                    };
+
+                    commentElement.appendChild(deleteButton);
+                }
+
+                container.appendChild(commentElement);
+
+            }
+        });
+        requestAnimationFrame(siteLoop);
+    }
+
+    siteLoop();
+</script>
+
+</html>

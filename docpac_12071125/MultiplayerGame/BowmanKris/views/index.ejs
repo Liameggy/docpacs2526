@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background-color: #dddddd;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="1000" height="600"></canvas>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let gameState;
+    let turnState;
+    let maxHealth;
+    let maxEnergy;
+    let player1;
+    let player2;
+    const buttons = [];
+    let hoverText = '';
+    let mouseX = 0, mouseY = 0;
+    let shake = {
+        player1: { active: false, offsetX: 0, duration: 0 },
+        player2: { active: false, offsetX: 0, duration: 0 },
+    };
+
+    // Establish a connection to the server
+    const socket = io();
+
+    socket.on('playerAssignment', (role) => {
+        player = role;
+    });
+
+    // Fix: Correctly destructure the received gameState object
+    socket.on('updateGameState', (data) => {
+        gameState = data.gameState;
+        turnState = gameState.turnState;
+        maxHealth = gameState.maxHealth;
+        maxEnergy = gameState.maxEnergy;
+        player1 = gameState.player1;
+        player2 = gameState.player2;
+        gameLoop();
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+    });
+
+    // Add mousemove event listener to detect hover
+    canvas.addEventListener('mousemove', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = event.clientX - rect.left;
+        mouseY = event.clientY - rect.top;
+
+        hoverText = ''; // Reset hover text
+        buttons.forEach((button) => {
+            if (
+                mouseX >= button.x &&
+                mouseX <= button.x + button.width &&
+                mouseY >= button.y &&
+                mouseY <= button.y + button.height
+            ) {
+                hoverText = button.hoverText; // Set hover text
+            }
+
+            if (turnState === 'player1') {
+                if (mouseX >= 20 && mouseX <= 320 && mouseY >= 20 && mouseY <= 50) {
+                    hoverText = `Player 1 Health: ${player1.health}/${maxHealth}`;
+                } else if (mouseX >= 680 && mouseX <= 980 && mouseY >= 20 && mouseY <= 50) {
+                    hoverText = `Player 2 Health: ${player2.health}/${maxHealth}`;
+                } else if (mouseX >= 20 && mouseX <= 320 && mouseY >= 60 && mouseY <= 90) {
+                    hoverText = `Player 1 Energy: ${player1.energy}/${maxEnergy}`;
+                } else if (mouseX >= 680 && mouseX <= 980 && mouseY >= 60 && mouseY <= 90) {
+                    hoverText = `Player 2 Energy: ${player2.energy}/${maxEnergy}`;
+                }
+            }
+
+            if (turnState === 'player2') {
+                if (mouseX >= 20 && mouseX <= 320 && mouseY >= 20 && mouseY <= 50) {
+                    hoverText = `Player 2 Health: ${player2.health}/${maxHealth}`;
+                } else if (mouseX >= 680 && mouseX <= 980 && mouseY >= 20 && mouseY <= 50) {
+                    hoverText = `Player 1 Health: ${player1.health}/${maxHealth}`;
+                } else if (mouseX >= 20 && mouseX <= 320 && mouseY >= 60 && mouseY <= 90) {
+                    hoverText = `Player 2 Energy: ${player2.energy}/${maxEnergy}`;
+                } else if (mouseX >= 680 && mouseX <= 980 && mouseY >= 60 && mouseY <= 90) {
+                    hoverText = `Player 1 Energy: ${player1.energy}/${maxEnergy}`;
+                }
+            }
+        });
+    });
+
+    canvas.addEventListener('click', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        // Check if the click is within any button's bounds
+        buttons.forEach((button) => {
+            if (
+                mouseX >= button.x && mouseX <= button.x + button.width && mouseY >= button.y && mouseY <= button.y + button.height
+            ) {
+                button.onClick(); // Call the button's onClick handler
+            }
+        });
+    });
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function defaultText() {
+        ctx.fillStyle = '#000';
+        ctx.strokeStyle = '#000';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+    }
+
+    function drawConsole() {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(150, 425, 700, 150); // Console background
+        ctx.strokeRect(150, 425, 700, 150); // Console border
+    }
+
+    function clearConsole() {
+        ctx.clearRect(150, 425, 700, 150); // Clear console area
+    }
+
+    function triggerShake(player) {
+        shake[player].active = true;
+        shake[player].duration = 10; // Shake for 10 frames
+    }
+
+    function drawBars() {
+        clearBars();
+
+        let calculateWidth = (value, max) => (value / max) * 300;
+        var player1HealthWidth = calculateWidth(player1.health, maxHealth);
+        var player2HealthWidth = calculateWidth(player2.health, maxHealth);
+        var player1EnergyWidth = calculateWidth(player1.energy, maxEnergy);
+        var player2EnergyWidth = calculateWidth(player2.energy, maxEnergy);
+
+        // Apply shake effect
+        if (shake.player1.active) {
+            shake.player1.offsetX = (Math.random() - 0.5 * 10);
+            shake.player1.duration--;
+            if (shake.player1.duration <= 0) {
+                shake.player1.active = false;
+                shake.player1.offsetX = 0;
+            }
+        }
+
+        if (shake.player2.active) {
+            shake.player2.offsetX = (Math.random() - 0.5 * 10);
+            shake.player2.duration--;
+            if (shake.player2.duration <= 0) {
+                shake.player2.active = false;
+                shake.player2.offsetX = 0;
+            }
+        }
+
+        if (player === 'player1' || player === 'spectator') {
+            // Draw Health Bars with shake offset
+            ctx.fillStyle = '#34d125'; // Health color
+            ctx.fillRect(20 + shake.player1.offsetX, 20, player1HealthWidth, 30); // Player 1 health bar
+            ctx.fillRect(680 + shake.player2.offsetX, 20, player2HealthWidth, 30); // Player 2 health bar
+
+            // Draw Energy Bars
+            ctx.fillStyle = '#db8d17'; // Energy color
+            ctx.fillRect(20, 60, player1EnergyWidth, 30); // Player 1 energy bar
+            ctx.fillRect(680, 60, player2EnergyWidth, 30); // Player 2 energy bar
+        } else if (player === 'player2') {
+            // Draw Health Bars with shake offset
+            ctx.fillStyle = '#34d125'; // Health color
+            ctx.fillRect(680 + shake.player1.offsetX, 20, player1HealthWidth, 30); // Player 1 health bar
+            ctx.fillRect(20 + shake.player2.offsetX, 20, player2HealthWidth, 30); // Player 2 health bar
+
+            // Draw Energy Bars
+            ctx.fillStyle = '#db8d17'; // Energy color
+            ctx.fillRect(680, 60, player1EnergyWidth, 30); // Player 1 energy bar
+            ctx.fillRect(20, 60, player2EnergyWidth, 30); // Player 2 energy bar
+        }
+
+        // Draw Borders
+        ctx.strokeStyle = '#000';
+        ctx.strokeRect(20, 20, 300, 30); // Player 1 health bar border
+        ctx.strokeRect(680, 20, 300, 30); // Player 2 health bar border
+        ctx.strokeRect(20, 60, 300, 30); // Player 1 energy bar border
+        ctx.strokeRect(680, 60, 300, 30); // Player 2 energy bar border
+    }
+
+    function clearBars() {
+        ctx.clearRect(20, 20, 300, 30); // Clear Player 1 health bar area
+        ctx.clearRect(680, 20, 300, 30); // Clear Player 2 health bar area
+        ctx.clearRect(20, 60, 300, 30); // Clear Player 1 energy bar area
+        ctx.clearRect(680, 60, 300, 30); // Clear Player 2 energy bar area
+    }
+
+    // Draw a button
+    function drawButton(x, y, text, onClick, hoverTextContent) {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x, y, 150, 30); // Button background
+        ctx.strokeStyle = '#000';
+        ctx.strokeRect(x, y, 150, 30); // Button border
+
+        defaultText();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, x + 75, y + 15); // Button text
+
+        // Add button to the global array
+        buttons.push({ x, y, width: 150, height: 30, onClick, hoverText: hoverTextContent });
+    }
+
+    function clearButtons() {
+        buttons.length = 0; // Clear the buttons array
+    }
+
+    function newTurn(turnState) {
+        clearButtons();
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = '#000';
+        if (player === 'player1') {
+            ctx.fillText('Player 1', 20, 100);
+            ctx.fillText('Player 2', 920, 100);
+            if (turnState === 'player1') {
+                ctx.fillText("Player 1's turn to attack!", 170, 450);
+                ctx.fillText('What would you like to do?', 170, 475);
+                drawButton(675, 445, 'Basic Attack', () => attack('basic', 'player2'), 'Damage: 20, Energy: +20');
+                drawButton(675, 485, 'Skill', () => attack('skill', 'player2'), 'Damage: 50, Energy: -75');
+                drawButton(675, 525, 'Ultimate', () => attack('ultimate', 'player2'), 'Damage: 100, Energy: -120');
+            } else {
+                ctx.fillText("Waiting for Player 2's move...", 170, 450);
+            }
+        } else if (player === 'player2') {
+            ctx.fillText('Player 2', 20, 100);
+            ctx.fillText('Player 1', 920, 100);
+            if (turnState === 'player2') {
+                ctx.fillText("Player 2's turn to attack!", 170, 450);
+                ctx.fillText('What would you like to do?', 170, 475);
+                drawButton(675, 445, 'Basic Attack', () => attack('basic', 'player2'), 'Damage: 20, Energy: +20');
+                drawButton(675, 485, 'Skill', () => attack('skill', 'player2'), 'Damage: 50, Energy: -75');
+                drawButton(675, 525, 'Ultimate', () => attack('ultimate', 'player2'), 'Damage: 100, Energy: -120');
+            } else {
+                ctx.fillText("Waiting for Player 1's move...", 170, 450);
+            }
+        }
+    }
+
+    function attack(type) {
+        if (player === 'player1') {
+            triggerShake('player2');
+        } else if (player === 'player2') {
+            triggerShake('player1');
+        }
+        socket.emit('attack', type);
+    }
+
+    function gameLoop() {
+        clearCanvas();
+        defaultText();
+
+        // Wait until at least two players have joined
+        if (!player1 || !player2) {
+            ctx.fillText('Waiting for another player to join...', 400, 300);
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        drawConsole();
+        drawBars();
+        newTurn(turnState);
+
+        if (hoverText) {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(mouseX + 15, mouseY - 25, ctx.measureText(hoverText).width - 13, 20);
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(hoverText, mouseX + 20, mouseY - 20);
+            ctx.strokeRect(mouseX + 15, mouseY - 25, ctx.measureText(hoverText).width + 10, 20);
+        }
+        requestAnimationFrame(gameLoop);
+    }
+
+</script>
+
+</html>

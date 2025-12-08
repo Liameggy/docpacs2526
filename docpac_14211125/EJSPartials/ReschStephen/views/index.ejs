@@ -1,0 +1,10 @@
+<%- include('partials/head.ejs') %>
+
+    <body>
+        <h1>Goober</h1>
+        <% if (viewport==="online" ) { %>
+            <button onclick="window.location='/print'">Print</button>
+            <% } %>
+    </body>
+
+    <%- include('partials/foot.ejs') %>

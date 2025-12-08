@@ -1,0 +1,28 @@
+<%- include('partials/head.ejs') %>
+    <body>
+        <div id="box">
+            <div><b id="clickCount">0</b></div>
+            <button id="click" onclick="clicked()">Click Me!</button>
+            <button id="click" onclick="reset()">Reset</button>
+        </div>
+        <% if (viewport==="online" ) { %>
+            <button id="click" onclick="window.location='/print'">Print</button>
+            <% } %>
+                <script>
+                    var click = 0
+                    var count = document.getElementById("clickCount")
+                    function clicked() {
+                        if (click == 99) {
+                            count.innerHTML = "You Win!"
+                        } else if (click < 99) {
+                            click += 1
+                            count.innerText = click
+                        }
+                    }
+                    function reset() {
+                            click = 0
+                            count.innerText = click
+                    }
+                </script>
+    </body>
+<%- include('partials/foot.ejs') %>

@@ -1,0 +1,13 @@
+<%- include('partials/head') %>
+
+
+    <body>
+        <h2>Welcome to the homepage</h2>
+        Print a New Page
+        <% if (viewport=='online' ) { %>
+            <button onclick="window.location.href='/print'">Print</button>
+            <% } %>
+    </body>
+
+
+    <%- include('partials/foot') %>

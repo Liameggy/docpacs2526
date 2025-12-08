@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lab 11-5</title>
+	<style>
+		button {
+			margin: 5px;
+			padding: 10px;
+		}
+
+		#output {
+			margin-top: 20px;
+			border-top: 1px solid #ccc;
+			padding-top: 10px;
+		}
+	</style>
+
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+	<h3>Web Developer Ethics & Privacy Lab</h3>
+
+	<p>Click a topic below to learn more and reflect:</p>
+
+	<button id="ethicsBtn">Ethical Behavior for Web Professionals</button>
+	<button id="privacyBtn">Privacy and Trust, How One Complements the Other</button>
+	<button id="fairUseBtn">Fair Use of User Data</button>
+	<button id="lawsBtn">Laws Against Privacy Violations</button>
+	<button id="intellectualBtn">Intellectual Property Rights</button>
+
+
+
+	<div id="output"></div>
+
+	<script>
+		const output = document.getElementById('output');
+
+		const topics = {
+			ethics: "The moral code that guides those involved in the creation and maintenance of web technologies.",
+			privacy: "Privacy and trust go hand in hand as privacy is the foundation of building and maintaining trust in both personal and professional relationships. Respective one's privacy displays trustworthiness, which then leads to individuals sharing information more freely.",
+			fairUse: "Determines how copyrighted material can be used without direct permission from the creator/owner.",
+			laws: "Laws such as the Privacy Act of 1974, HIPAA, COPPA, CCPA/CPRA, VCDPA, CPA, and the Gramm-Leach-Bliley Act are a few examples of laws/regulations that protect user and government data, giving consumers rights over their own personal data.",
+			intellectual: "Protects creations of the mind, which includes inventions, books, art, music, symbols, names, etc. Generally falls into 4 categories: Patents, Copyrights, Trademarks, and Trade Secrets."
+		};
+
+		document.getElementById('ethicsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Ethical Behavior</h3><p>${topics.ethics}</p>`;
+		});
+		document.getElementById('privacyBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Privacy and Trust</h3><p>${topics.privacy}</p>`;
+		});
+		document.getElementById('fairUseBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Fair Use of User Data</h3><p>${topics.fairUse}</p>`;
+		});
+		document.getElementById('lawsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Laws Against Privacy Violations</h3><p>${topics.laws}</p>`;
+		});
+		document.getElementById('intellectualBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Intellectual Property Rights</h3><p>${topics.intellectual}</p>`;
+		});
+
+
+	</script>
+
+</body>
+
+</html>

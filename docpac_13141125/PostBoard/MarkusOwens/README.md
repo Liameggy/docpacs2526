@@ -1,0 +1,1 @@
+install things with npm i then use node app.js to run it locally at least

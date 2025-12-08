@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 11-5</title>
+		<style>
+		  button { margin: 5px; padding: 10px; }
+		  #output { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+		</style>
+
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h3>Web Developer Ethics & Privacy Lab</h3>
+
+		<p>Click a topic below to learn more and reflect:</p>
+
+		<button id="ethicsBtn">Ethical Behavior for Web Professionals</button>
+		<button id="privacyBtn">Privacy and trust, how one complements the other</button>
+		<button id="fairUseBtn">Fair Use of user data</button>
+		<button id="lawsBtn">Laws against privacy violations</button>
+		<button id="intellectualBtn">Intellectual Property Rights</button>
+
+
+
+		<div id="output"></div>
+
+		<script>
+		  const output = document.getElementById('output');
+
+		  const topics = {
+			ethics: "prioritizing users' well-being and rights, which includes respecting privacy, ensuring accessibility, and promoting transparency.",
+			privacy: "Trust encourages loyalty, true privacy requires ethical practices and transparency in handling personal information.",
+			fairUse: "Permits the use of copyrighted material without permission under certain circumstances, but it's determined on a case-by-case basis by weighing four factors.",
+			laws: "Laws against privacy violations include federal statutes like the Privacy Act of 1974 for government records, the Health Insurance Portability and Accountability Act (HIPAA) for health information, and the Children's Online Privacy Protection Act (COPPA) for children's data. Common law torts like invasion of privacy provide a legal basis for lawsuits against individuals and companies. Additionally, a growing number of state-level laws, such as the California Consumer Privacy Act (CCPA), offer comprehensive data protection for consumers. ",
+			intellectual: "Intellectual property rights protect creations of the mind, such as inventions, literary and artistic works, designs, symbols, names, and images used in commerce."
+		  };
+
+		  document.getElementById('ethicsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Ethical Behavior</h3><p>${topics.ethics}</p>`;
+		  });
+		  document.getElementById('privacyBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Privacy and Trust</h3><p>${topics.privacy}</p>`;
+		  });
+		  document.getElementById('fairUseBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Fair Use of User Data</h3><p>${topics.fairUse}</p>`;
+		  });
+		  document.getElementById('lawsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Laws Against Privacy Violations</h3><p>${topics.laws}</p>`;
+		  });
+		  document.getElementById('intellectualBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Intellectual Property Rights</h3><p>${topics.intellectual}</p>`;
+		  });
+
+
+		</script>
+
+	</body>
+</html>

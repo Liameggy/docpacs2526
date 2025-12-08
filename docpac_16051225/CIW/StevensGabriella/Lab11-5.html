@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 11-5</title>
+		<style>
+		  button { margin: 5px; padding: 10px; }
+		  #output { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+		</style>
+
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h3>Web Developer Ethics & Privacy Lab</h3>
+
+		<p>Click a topic below to learn more and reflect:</p>
+
+		<button id="ethicsBtn">Ethical Behavior for Web Professionals</button>
+		<button id="privacyBtn">Privacy and Trust: They're Both Important</button>
+		<button id="fairBtn">Fair Use and User Data</button>
+		<button id="privVioBtn">Laws Against Privacy Violations</button>
+		<button id="intellectualBtn">Intellectual Property Rights</button>
+
+		<div id="output"></div>
+
+		<script>
+		  const output = document.getElementById('output');
+
+		  const topics = {
+			ethics: "Ethical behavior involves honesty, transparency, respect for user data, and following professional standards in all web development tasks.",
+			privacy: "With the Internet being a part of our daily lives, it's important that web developers protect their users' personal information from any forms of misuse. By keeping that personal information safe, users can trust certain websites to help them do what they need to do.",
+			fairUse: "Fair use allows for certain tidbits of copyrighted information to be used in other works, but only with proper credit. Web developers need to be careful when implementing content that is not theirs into their website. Regarding user data, developers should only use the least amount of data they collect necessary to achieve their goals.",
+			laws: "There are many laws in place to protect the privacy of the people online. Consequences for violating those laws include fines, lawsuits, and reputation damages.",
+			intellectual: "Anything that is created has an owner. Web developers need to respect intellectual property rights of other people's content by not using copyrighted materials without permission and by giving proper credit when using someone else's work."
+		  };
+
+		  document.getElementById('ethicsBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Ethical Behavior</h3><p>${topics.ethics}</p>`;
+		  });
+		  document.getElementById('privacyBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Privacy and Trust</h3><p>${topics.privacy}</p>`;
+		  });
+		  document.getElementById('fairBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Fair Use and User Data</h3><p>${topics.fairUse}</p>`;
+		  });
+		  document.getElementById('privVioBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Privacy Violations</h3><p>${topics.laws}</p>`;
+		  });
+		  document.getElementById('intellectualBtn').addEventListener('click', () => {
+			output.innerHTML = `<h3>Intellectual Property</h3><p>${topics.intellectual}</p>`;
+		  });
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,8 @@
+<%- include('./partials/head') %>
+
+    <body>
+            <% if (viewport === 'online') { %>
+                <button onclick="window.location='/print'">print</button>
+            <% } %>
+    </body>
+    <%- include('./partials/foot') %>

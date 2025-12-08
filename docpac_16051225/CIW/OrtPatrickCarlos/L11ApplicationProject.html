@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 11 Application Project</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		  <h4>Enter Your Name</h4>
+		  <hr>
+
+		  <form id="nameForm">
+			<input type="text" id="userName" name="userName">
+			<br><br>
+			<button id="submitName">Submit Name</button>
+			<button id="seeCookie">See Cookie</button>
+		  </form>
+			
+
+
+		  <script>
+			function setCookie(name, value, days) {
+			  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+			  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+			}
+
+			function handleFormSubmit(event) {
+			  event.preventDefault();
+
+			  const nameInput = document.getElementById('userName');
+			  const name = nameInput.value.trim();
+
+			  if (name === "") {
+				alert("Please enter your name.");
+				return false;
+			  }
+
+			  setCookie("userName", name, 30);
+			  alert("Cookie has been set.");
+			  return false;
+			}
+
+			function openWelcomeWindow() {
+			  const cookieVal = getCookie("userName") || "No user name found.";
+			  const welcomeWindow = window.open("", "WelcomeWindow", "width=400,height=200");
+
+			  welcomeWindow.document.write("<!DOCTYPE html><html><head><title>Welcome</title></head><body>");
+			  if (cookieVal) {
+				welcomeWindow.document.write(`<h3>Welcome, ${cookieVal}!</h3>`);
+			  } else {
+				welcomeWindow.document.write("<h3>No user name found in cookies.</h3>");
+			  }
+			  welcomeWindow.document.write("</body></html>");
+			  welcomeWindow.document.close();
+			}
+
+			//Add getCookie(name) below
+			function getCookie(name) {
+				const cookies = document.cookie.split("; ");
+				for (const cookie of cookies) {
+					const [key, value] = cookie.split("=");
+					if (key === name) {
+					return decodeURIComponent(value);
+					}
+				} return null;
+			}
+
+
+			//Add event listeners below
+			const form = document.getElementById("nameForm");
+			form.addEventListener("submit", handleFormSubmit);
+			
+			const submitNameButton = document.getElementById("submitName");
+			submitNameButton.addEventListener("click", handleFormSubmit);
+			
+			const seeCookieButton = document.getElementById("seeCookie");
+			seeCookieButton.addEventListener("click", openWelcomeWindow);
+
+		  </script>
+	</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 10-1</title>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+		<form name="myForm" id="myForm">
+		  <label><b>Name</b></label>
+		  <input type="text" placeholder="FirstName" name="fname" id="fname"required> 
+		  <input type="text" placeholder="LastName" name="lname" required> <br>
+		  <label><b>EMail</b></label>
+		  <input type="password" placeholder="Enter Email ID" name="email" required maxlength="10"> <br>
+		  <label><b>Password</b></label>
+		  <input type="password" placeholder="Enter Password" name="pwd" required> <br>
+		  <label><b>Gender</b></label>
+		  <input type="radio" name="gen" value="male">Male
+		  <input type="radio" name="gen" value="female">Female <br>
+		  <input type="submit" value="Submit" id="Submit">
+		  <input type="reset" value="Reset">
+		</form>
+
+	</body>
+	<script>
+			const ogfirstname=document.getElementById("fname");
+			const firstname=firstname.value=firstname.value.trim();
+			const submitbtn=document.getElementById("Submit");
+	submitbtn.addEventListener ("click", function(event) {
+	    
+		console.log(firstname[0]);
+		console.log(firstname.value);
+		console.log(firstname);
+		if (firstname==='') {
+		  console.log("First Name must be filled out");
+		  alert("First Name must be filled out");
+		  event.preventDefault();
+		}
+		else {
+		  console.log("mocing to site");
+		  event.preventDefault();
+		  window.location.href="https://www.ciwcertified.com/";
+		};
+
+	  });
+	</script>
+</html>

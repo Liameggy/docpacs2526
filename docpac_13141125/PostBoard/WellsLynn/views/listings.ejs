@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fb;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        #createListingForm,
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        textarea {
+            padding: 8px;
+            font-size: 1rem;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 8px 12px;
+            margin-right: 6px;
+        }
+
+        #listings {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .listing {
+            background: #fff;
+            border: 1px solid #d2d8e6;
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .listing h2 {
+            margin-top: 0;
+        }
+
+        .comments {
+            margin-top: 16px;
+            border-top: 1px solid #e2e6f0;
+            padding-top: 12px;
+        }
+
+        .comment {
+            border-bottom: 1px solid #f0f2f7;
+            padding: 8px 0;
+        }
+
+        .comment:last-of-type {
+            border-bottom: none;
+        }
+
+        #editDiv {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid blue;
+            background-color: lightgray;
+            z-index: 100;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 300px;
+        }
+    </style>
+</head>
+
+<body data-user='<%- JSON.stringify(user) %>'>
+    <h1>Job Listings</h1>
+    <section id="createListing">
+        <h2>Create a Listing</h2>
+        <form id="createListingForm">
+            <input type="text" id="listingTitle" name="title" placeholder="Title" required />
+            <textarea id="listingDescription" name="description" placeholder="Description" rows="4" required></textarea>
+            <button type="submit">Create Listing</button>
+        </form>
+    </section>
+    <div id="listings">
+    </div>
+</body>
+<script>
+    const currentUser = JSON.parse(document.body.dataset.user || '{}');
+    const listingsContainer = document.getElementById('listings');
+    const createListingForm = document.getElementById('createListingForm');
+
+    document.addEventListener('DOMContentLoaded', loadListings);
+    createListingForm.addEventListener('submit', handleCreateListing);
+
+    async function loadListings() {
+        try {
+            const response = await fetch('/api/posts');
+            if (!response.ok) {
+                throw new Error('Failed to fetch listings');
+            }
+            const posts = await response.json();
+            renderListings(posts);
+        } catch (error) {
+            console.error(error);
+            alert('Unable to load listings right now.');
+        }
+    }
+
+    function renderListings(posts) {
+        listingsContainer.innerHTML = '';
+        if (!posts.length) {
+            listingsContainer.innerHTML = '<p>No listings yet. Create one above!</p>';
+            return;
+        }
+
+        posts.forEach((post) => {
+            const listing = document.createElement('div');
+            listing.className = 'listing';
+            listing.dataset.postId = post.id;
+            listing.dataset.creatorId = post.creatorId;
+
+            const title = document.createElement('h2');
+            title.className = 'listing-title';
+            title.textContent = post.title;
+
+            const description = document.createElement('p');
+            description.className = 'listing-description';
+            description.textContent = post.description;
+
+            const meta = document.createElement('p');
+            meta.className = 'listing-meta';
+            meta.textContent = `Created by ${post.creatorName} on ${new Date(post.createdAt).toLocaleString()}`;
+
+            listing.appendChild(title);
+            listing.appendChild(description);
+            listing.appendChild(meta);
+
+            if (currentUser.id === post.creatorId) {
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => openEditForm(post.id);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteListing(post.id);
+
+                listing.appendChild(editBtn);
+                listing.appendChild(deleteBtn);
+            }
+
+            const commentsSection = document.createElement('div');
+            commentsSection.className = 'comments';
+
+            const commentsTitle = document.createElement('h3');
+            commentsTitle.textContent = 'Comments';
+            commentsSection.appendChild(commentsTitle);
+
+            post.comments.forEach((comment) => {
+                commentsSection.appendChild(renderComment(comment, post));
+            });
+
+            const commentForm = document.createElement('form');
+            commentForm.className = 'comment-form';
+            commentForm.onsubmit = (event) => {
+                event.preventDefault();
+                handleCommentSubmit(post.id, commentInput);
+            };
+
+            const commentInput = document.createElement('input');
+            commentInput.type = 'text';
+            commentInput.placeholder = 'Add a comment...';
+            commentInput.required = true;
+
+            const commentSubmitBtn = document.createElement('button');
+            commentSubmitBtn.type = 'submit';
+            commentSubmitBtn.textContent = 'Submit Comment';
+
+            commentForm.appendChild(commentInput);
+            commentForm.appendChild(commentSubmitBtn);
+
+            commentsSection.appendChild(commentForm);
+            listing.appendChild(commentsSection);
+
+            listingsContainer.appendChild(listing);
+        });
+    }
+
+    function renderComment(comment, post) {
+        const commentWrapper = document.createElement('div');
+        commentWrapper.className = 'comment';
+        commentWrapper.dataset.commentId = comment.uid;
+
+        const commentText = document.createElement('p');
+        commentText.textContent = comment.body;
+
+        const commentMeta = document.createElement('small');
+        commentMeta.textContent = `By ${comment.author} on ${new Date(comment.createdAt).toLocaleString()}`;
+
+        commentWrapper.appendChild(commentText);
+        commentWrapper.appendChild(commentMeta);
+
+        if (currentUser.id === post.creatorId) {
+            const deleteCommentBtn = document.createElement('button');
+            deleteCommentBtn.textContent = 'Delete Comment';
+            deleteCommentBtn.onclick = () => deleteComment(comment.uid);
+            commentWrapper.appendChild(deleteCommentBtn);
+        }
+
+        return commentWrapper;
+    }
+
+    async function handleCreateListing(event) {
+        event.preventDefault();
+        const title = document.getElementById('listingTitle').value.trim();
+        const description = document.getElementById('listingDescription').value.trim();
+
+        if (!title || !description) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create listing');
+            }
+
+            createListingForm.reset();
+            await loadListings();
+        } catch (error) {
+            console.error(error);
+            alert('Unable to create listing right now.');
+        }
+    }
+
+    async function deleteListing(postId) {
+        if (!confirm('Delete this listing?')) return;
+
+        try {
+            const response = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+            if (!response.ok) {
+                throw new Error('Failed to delete listing');
+            }
+            await loadListings();
+        } catch (error) {
+            console.error(error);
+            alert('Unable to delete listing right now.');
+        }
+    }
+
+    function openEditForm(postId) {
+        const existing = document.getElementById('editDiv');
+        if (existing) existing.remove();
+
+        const listing = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!listing) return;
+
+        const currentTitle = listing.querySelector('.listing-title').textContent;
+        const currentDescription = listing.querySelector('.listing-description').textContent;
+
+        const editDiv = document.createElement('div');
+        editDiv.id = 'editDiv';
+        editDiv.innerHTML = `<h2>Edit Listing</h2>`;
+
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.value = currentTitle;
+
+        const descriptionInput = document.createElement('textarea');
+        descriptionInput.rows = 4;
+        descriptionInput.value = currentDescription;
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.innerText = 'Confirm';
+        confirmBtn.onclick = async () => {
+            await updateListing(postId, titleInput.value.trim(), descriptionInput.value.trim());
+            editDiv.remove();
+        };
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.innerText = 'Cancel';
+        cancelBtn.onclick = () => editDiv.remove();
+
+        editDiv.appendChild(titleInput);
+        editDiv.appendChild(descriptionInput);
+        editDiv.appendChild(confirmBtn);
+        editDiv.appendChild(cancelBtn);
+
+        document.body.appendChild(editDiv);
+    }
+
+    async function updateListing(postId, title, description) {
+        if (!title || !description) return;
+
+        try {
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update listing');
+            }
+            await loadListings();
+        } catch (error) {
+            console.error(error);
+            alert('Unable to update listing right now.');
+        }
+    }
+
+    async function handleCommentSubmit(postId, inputEl) {
+        const body = inputEl.value.trim();
+        if (!body) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/posts/${postId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ body })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add comment');
+            }
+
+            inputEl.value = '';
+            await loadListings();
+        } catch (error) {
+            console.error(error);
+            alert('Unable to add comment right now.');
+        }
+    }
+
+    async function deleteComment(commentId) {
+        if (!confirm('Delete this comment?')) return;
+
+        try {
+            const response = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
+            if (!response.ok) {
+                throw new Error('Failed to delete comment');
+            }
+            await loadListings();
+        } catch (error) {
+            console.error(error);
+            alert('Unable to delete comment right now.');
+        }
+    }
+</script>
+
+</html>

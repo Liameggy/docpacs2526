@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postboard</title>
+</head>
+<style>
+    #posts div {
+        border: 1px solid black;
+        margin: 10px;
+        padding: 10px;
+        width: auto;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+</style>
+
+<body>
+    Hello, <%- user %>
+        Make a post:
+        <form onsubmit="makePost(event)">
+            <textarea name="title" rows="1" cols="50" placeholder="Write your title here..."></textarea><br>
+            <textarea name="content" rows="4" cols="50" placeholder="Write your post here..."></textarea><br>
+            <button type="submit">Submit Post</button>
+        </form>
+
+        <h2>Posts:</h2>
+        <ul id="posts"></ul>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const posts = document.getElementById('posts');
+
+            function makePost(e) {
+                e.preventDefault();
+                const content = document.getElementsByName('content')[0].value.trim();
+                const title = document.getElementsByName('title')[0].value.trim();
+                const author = "<%- user %>";
+                if (!content) return;
+                if (!title) return;
+                socket.emit('newPost', { author, title, content }); // send to server
+                document.getElementsByName('content')[0].value = '';
+                document.getElementsByName('title')[0].value = '';
+            }
+
+            socket.on('broadcastPost', (data) => {
+                const div = document.createElement('div');
+                div.id = `post-${data.uid}`;
+                div.innerHTML = `
+                <button onclick="getRidOfIt(${data.uid})">delete</button>
+                <button onclick="editPost(${data.uid}, '${data.author}')">edit</button><br>
+                <strong>${data.title}</strong> from ${data.author}<br>
+                ${data.time}<br>
+                <p>${data.content}</p>
+                <div id="comments-${data.uid}"></div>
+                <input type="text" placeholder="Add comment" onkeydown="if(event.key==='Enter') addComment(${data.uid}, this)">`;
+
+
+                posts.firstChild ?
+                    posts.insertBefore(div, posts.firstChild) : posts.appendChild(div);
+            });
+            socket.on('initialPosts', (data) => {
+                data.forEach(post => {
+                    const div = document.createElement('div');
+                    div.id = `post-${post.uid}`;
+                    div.innerHTML = `
+                    <button onclick="getRidOfIt(${post.uid})">delete</button>
+                    <button onclick="editPost(${post.uid}, '${post.author}')">edit</button><br>
+                    <strong>${post.title}</strong> from ${post.author}<br>
+                    ${post.time}<br>
+                    <p>${post.content}</p>
+                    <div id="comments-${post.uid}"></div>
+                    <input type="text" placeholder="Add comment" onkeydown="if(event.key==='Enter') addComment(${post.uid}, this)">`;
+                    posts.firstChild ? posts.insertBefore(div, posts.firstChild) : posts.appendChild(div);
+
+                    // Render comments
+                    (post.comments || []).forEach(comment => {
+                        const cDiv = document.createElement('div');
+                        cDiv.id = `comment-${comment.cid}`;
+                        cDiv.innerHTML = `${comment.author}: ${comment.content} <button onclick="deleteComment(${comment.cid}, '${comment.author}')">Delete</button>`;
+                        document.getElementById(`comments-${post.uid}`).appendChild(cDiv);
+                    });
+                });
+            });
+
+            socket.on('removePost', (uid) => {
+                const postDiv = document.getElementById(`post-${uid}`);
+                if (postDiv) {
+                    postDiv.remove();
+                }
+            });
+            function getRidOfIt(uid) {
+                console.log('hi', uid);
+                socket.emit('deletePost', uid);
+            }
+            // Add comment
+            function addComment(postUid, input) {
+                const content = input.value.trim();
+                if (!content) return;
+                socket.emit('newComment', { postUid, author: "<%- user %>", content });
+                input.value = '';
+            }
+
+            socket.on('broadcastComment', (comment) => {
+                const div = document.createElement('div');
+                div.id = `comment-${comment.cid}`;
+                div.innerHTML = `${comment.author}: ${comment.content} <button onclick="deleteComment(${comment.cid}, '${comment.author}')">Delete</button>`;
+                document.getElementById(`comments-${comment.post_uid}`).appendChild(div);
+            });
+
+            function deleteComment(cid, author) {
+                socket.emit('deleteComment', { cid, author: "<%- user %>" });
+            }
+
+            socket.on('removeComment', ({ cid }) => {
+                const c = document.getElementById(`comment-${cid}`);
+                if (c) c.remove();
+            });
+
+            function editPost(uid) {
+                const postDiv = document.getElementById(`post-${uid}`);
+                const title = prompt("New title", postDiv.querySelector('strong').textContent);
+                const content = prompt("New content", postDiv.querySelector('p').textContent);
+                socket.emit('editPost', { uid, author: "<%- user %>", title, content });
+            }
+
+            socket.on('postEdited', ({ uid, title, content }) => {
+                const postDiv = document.getElementById(`post-${uid}`);
+                if (postDiv) {
+                    postDiv.querySelector('strong').textContent = title;
+                    postDiv.querySelector('p').textContent = content;
+                }
+            });
+
+        </script>
+
+</body>
+
+</html>
