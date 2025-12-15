@@ -1,0 +1,34 @@
+# **Post Board**
+
+Create a full-stack web application where users can post and manage job listings, comment on others' posts, and view posts by specific users. The goal is to demonstrate your ability to design a relational database, handle authentication, and build dynamic front-end pages connected to server routes.
+
+## **Requirements**
+
+- **Must use the following technology:**
+  - **Node.js** (server)
+  - **Express.js** (routing)
+  - **EJS** or **React.js** (frontend)
+  - **SQLite3** (database)
+  - **Formbar OAuth** (login system)
+- **Post Management**
+  - Authenticated users can create, edit, and delete their own job listings.
+  - Posts should display title, description, creator, and timestamp.
+  - Posts must appear in **chronological order (newest first).**
+- **Comment System**
+  - Authenticated users can comment on posts.
+  - Post creators can delete comments under their own posts.
+  - Comments must appear in **chronological order (oldest first).**
+- **User Profiles**
+  - Clicking a username anywhere in the app should show a page listing all posts made by that user.
+- **Database Structure**
+  - Use **three tables:**
+    - users
+    - posts
+    - comments
+  - Use **JOIN queries** to retrieve posts and comments efficiently.
+- **Authentication**
+  - Implement **Formbar OAuth Login** for user authentication.
+- **Documentation**
+  - Main application file must be named \`app.js\` in the route
+  - Dependencies installed automatically by using \`npm i\`
+  - README.md with complete description and instructions on how to install and use.
