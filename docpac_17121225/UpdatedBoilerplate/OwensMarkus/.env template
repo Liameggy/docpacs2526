@@ -1,0 +1,6 @@
+PORT=placeholder
+SESSION_SECRET=placeholder
+AUTH_URL=placeholder
+THIS_URL=placeholder
+API_KEY=placeholder
+DATABASE_URL=placeholder

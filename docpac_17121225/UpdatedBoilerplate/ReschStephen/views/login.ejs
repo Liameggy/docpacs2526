@@ -1,0 +1,17 @@
+<%- include('partials/header.ejs') %>
+
+    <body>
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <button type="button" onclick="window.location.href='/auth/formbar'">Login with Formbar</button>
+        <% if (error) { %>
+            <p style="color: red;">
+                <%= error %>
+            </p>
+            <% } %>
+    </body>
+
+    <%- include('partials/footer.ejs') %>

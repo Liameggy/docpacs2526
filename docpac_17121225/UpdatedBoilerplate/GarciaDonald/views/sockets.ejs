@@ -1,0 +1,145 @@
+<%- include('partials/header', { title: 'Socket.IO Magic - Formbar App' }) %>
+
+<div class="container">
+    <h1>WELCOME TO SOCKET.IO!</h1>
+    <p>Want to see some magic? You've come to the right place.</p>
+    
+    <!-- Room Join Section -->
+    <div id="join-section" style="margin: 30px 0;">
+        <h2>✨ Join the Magic Room ✨</h2>
+        <p>Enter a room name and your username to start the real-time magic!</p>
+        <form id="join-form" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
+            <input type="text" id="username-input" placeholder="Your magical username" required style="padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px;">
+            <input type="text" id="room-input" placeholder="Room name (e.g., 'magic-room')" required style="padding: 12px; border: 2px solid #007bff; border-radius: 8px; font-size: 16px;">
+            <button type="submit" class="btn" style="padding: 12px 24px; font-size: 16px;">🪄 Join the Magic!</button>
+        </form>
+    </div>
+    
+    <!-- Room Info -->
+    <div id="room-info" style="display: none; margin: 20px 0; padding: 15px; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px;">
+        <h3>🏠 Current Magic Room: <span id="current-room"></span></h3>
+        <p>You're connected! Start chatting and sending magical events below.</p>
+        <button id="leave-room-btn" class="btn" style="background-color: #dc3545; border: none;">🚪 Leave Room</button>
+    </div>
+    
+    <!-- Magic Happens Here -->
+    <div id="magic-section" style="display: none;">
+        
+        <!-- Chat Messages -->
+        <div style="margin: 30px 0;">
+            <h2>💬 Magic Chat</h2>
+            <div id="messages" style="height: 350px; overflow-y: auto; border: 3px solid #007bff; padding: 20px; margin: 15px 0; text-align: left; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="text-align: center; color: #666; font-style: italic;">Messages will appear here like magic! ✨</div>
+            </div>
+            
+            <!-- Message Input -->
+            <form id="message-form" style="display: flex; gap: 10px; justify-content: center;">
+                <input type="text" id="message-input" placeholder="Type your magical message..." required style="flex: 1; padding: 12px; border: 2px solid #28a745; border-radius: 8px; font-size: 16px;">
+                <button type="submit" class="btn" style="background-color: #28a745; padding: 12px 20px;">📨 Send Magic</button>
+            </form>
+        </div>
+        
+        <!-- Magical Events -->
+        <div style="margin: 30px 0;">
+            <h2>🎭 Cast Magical Spells</h2>
+            <p>Click these buttons to send instant magical events to everyone in your room!</p>
+            
+            <!-- Quick Magic Buttons -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0;">
+                <button class="btn" onclick="castQuickSpell('wave')" style="background: linear-gradient(45deg, #ff6b6b, #feca57); border: none; padding: 15px; font-size: 18px;">👋 Wave</button>
+                <button class="btn" onclick="castQuickSpell('sparkles')" style="background: linear-gradient(45deg, #a8edea, #fed6e3); border: none; padding: 15px; font-size: 18px;">✨ Sparkles</button>
+                <button class="btn" onclick="castQuickSpell('celebration')" style="background: linear-gradient(45deg, #ffecd2, #fcb69f); border: none; padding: 15px; font-size: 18px;">🎉 Celebrate</button>
+                <button class="btn" onclick="castQuickSpell('magic-wand')" style="background: linear-gradient(45deg, #667eea, #764ba2); border: none; padding: 15px; font-size: 18px;">🪄 Magic Wand</button>
+                <button class="btn" onclick="castQuickSpell('crystal-ball')" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none; padding: 15px; font-size: 18px;">🔮 Crystal Ball</button>
+                <button class="btn" onclick="castQuickSpell('lightning')" style="background: linear-gradient(45deg, #4facfe, #00f2fe); border: none; padding: 15px; font-size: 18px;">⚡ Lightning</button>
+            </div>
+
+            
+            <!-- Custom Magic Spell -->
+            <div style="margin: 25px 0; padding: 20px; background-color: #f8f9fa; border-radius: 10px; border: 2px dashed #007bff;">
+                <h3>🧙‍♂️ Create Your Own Spell</h3>
+                <form id="custom-spell-form" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <input type="text" id="spell-name-input" placeholder="Spell name (e.g., 'fireball')" required style="padding: 10px; border: 2px solid #6f42c1; border-radius: 5px;">
+                    <input type="text" id="spell-effect-input" placeholder="Spell effect (e.g., '🔥 Casts fireball')" required style="padding: 10px; border: 2px solid #6f42c1; border-radius: 5px;">
+                    <button type="submit" class="btn" style="background-color: #6f42c1;">🎯 Cast Spell</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Magic Stats -->
+        <div id="magic-stats" style="margin: 30px 0; padding: 20px; background: linear-gradient(45deg, #ff9a9e, #fecfef); border-radius: 15px; color: #333;">
+            <h3>📊 Magic Statistics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold;" id="messages-count">0</div>
+                    <div>Messages Sent</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold;" id="spells-count">0</div>
+                    <div>Spells Cast</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold;" id="users-count">0</div>
+                    <div>Wizards in Room</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Socket.IO Magic Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Our modular Socket.IO scripts -->
+<script src="/js/sockets/onConnect.js"></script>
+<script src="/js/sockets/onJoinRoom.js"></script>
+<script src="/js/sockets/onChat.js"></script>
+
+<!-- Initialize the magic -->
+<script>
+    // Initialize stats display when page loads
+    updateStats();
+    
+    // Add magical CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes magicAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        #messages::-webkit-scrollbar-thumb {
+            background: #007bff;
+            border-radius: 10px;
+        }
+        
+        #messages::-webkit-scrollbar-thumb:hover {
+            background: #0056b3;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+
+<%- include('partials/footer') %>
+

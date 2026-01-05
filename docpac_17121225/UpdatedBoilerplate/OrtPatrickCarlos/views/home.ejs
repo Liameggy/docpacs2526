@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="/css/styles.css">
+<main>
+    <h1>Welcome</h1>
+    
+    <% if (user) { %>
+        <p>Welcome back, <%= user.username %>!</p>
+        <a href="/profile">Go to your profile</a>
+        <br>
+        <a href="/socket">Try the Socket.IO demo</a>
+    <% } else { %>
+        <p>Welcome, guest!</p>
+        <a href="/login">Log in to get started</a>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>

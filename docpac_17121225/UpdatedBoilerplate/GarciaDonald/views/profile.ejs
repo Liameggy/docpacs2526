@@ -1,0 +1,36 @@
+<%- include('partials/header', { title: 'Profile - Formbar App' }) %>
+
+<div class="container">
+    <h1>YOUR PROFILE</h1>
+    <p>Welcome to your profile page, <%= user.username %>!</p>
+    
+    <h2>Statistics:</h2>
+    <ul style="text-align: left; display: inline-block;">
+        <li>Formbar ID: <%= user.formbarId %></li>
+        <li>Documents Uploaded: <%= uploadCount %></li>
+        <li>Username: <%= user.username %></li>
+        <li>Account ID: <%= user.id %></li>
+    </ul>
+    
+    <h2>Upload a Document:</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="document" required>
+        <button type="submit" class="btn">Upload</button>
+    </form>
+    
+    <h2>Your Uploaded Files:</h2>
+    <div style="text-align: left; max-width: 600px; margin: 20px auto;">
+        <% if (uploads.length > 0) { %>
+            <% uploads.forEach(function(upload) { %>
+                <div class="upload-item">
+                    <strong>File:</strong> <%= upload.file_name %><br>
+                    <strong>Uploaded:</strong> <%= new Date(upload.uploaded_at).toLocaleString() %>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No files uploaded yet.</p>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

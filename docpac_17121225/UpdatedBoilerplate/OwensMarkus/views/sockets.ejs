@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<body>
+    hallo!!!, <%= user %>!
+    <h2>Socket Test</h2>
+    <div id="messages"></div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" autocomplete="off" placeholder="Type your message here..." />
+        <button type="submit">Send</button>
+    </form>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const form = document.getElementById('messageForm');
+    const input = document.getElementById('messageInput');
+    const messagesDiv = document.getElementById('messages');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+            socket.emit('update', input.value);
+            input.value = '';
+        }
+    });
+    socket.on('update', function(msg) {
+        const msgElem = document.createElement('div');
+        msgElem.textContent = msg+ <%- " (' said " + user + ".')" %>;
+        messagesDiv.appendChild(msgElem);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+</script>
+<%- include('partials/footer') %>

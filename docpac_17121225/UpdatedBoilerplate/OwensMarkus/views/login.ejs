@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<body>
+    <form action="/login" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <label for="fbid">Formbar ID(optional):</label>
+        <input type="text" id="fbid" name="fbid">
+        <br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+<%- include('partials/footer') %>

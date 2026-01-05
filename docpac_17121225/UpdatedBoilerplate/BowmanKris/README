@@ -1,0 +1,63 @@
+# Installation Guide
+
+***
+
+## Package Configuration
+### Modules
+To install the project's required dependencies, copy the following command and paste it in the terminal:
+> npm install bcrypt connect-sqlite3 dotenv ejs express express-session jsonwebtoken multer path socket.io socket.io-client sqlite3
+This should create package.json and package-lock.json files. 
+
+### Initializing the Database
+In order to initialize your project's database, you *need* to add the following to your package.json file:
+>    "scripts": {
+>        "init-database": "node scripts/initDatabase.js",
+>    }
+To initialize your database, run the following command in your terminal:
+> npm run init-database
+
+#### Optional Package Configuration
+Optionally, you may edit the package.json file to include the corret name, description, main, author, and license.
+
+***
+
+Once you have completed all the steps outlined above, your package.json file should look something like this:
+> {
+>    "name": "your_project_name",
+>    "description": "your_description",
+>    "main": "app.js",
+>    "author": "your_name",
+>    "license": "your_license" ,
+>    "scripts": {
+>        "init-database": "node scripts/initDatabase.js",
+>    },
+>    "dependencies": {
+>        "bcrypt": "^6.0.0",
+>        "connect-sqlite3": "^0.9.16",
+>        "dotenv": "^17.2.3",
+>        "ejs": "^3.1.10",
+>        "express": "^5.2.1",
+>        "express-session": "^1.18.2",
+>        "jsonwebtoken": "^9.0.3",
+>        "multer": "^2.0.2",
+>        "path": "^0.12.7",
+>        "socket.io": "^4.8.1",
+>        "socket.io-client": "^4.8.1",
+>        "sqlite3": "^5.1.7"
+>    },
+> }
+
+***
+
+## Templates
+### Environment Variables
+Copy the .env_template file. Rename it to .env. Configure your port, session secret, Formbar API key and redirect path, and your uploads and database directories.
+
+### gitignore
+Copy the .gitignore_template file. Rename it to .gitignore. Configure your data directories, and add any additional files you'd like to ignore.
+
+*** 
+
+## Starting the Server
+After the server has been properly configured as outlined above, start the server with the following command:
+> node app.js

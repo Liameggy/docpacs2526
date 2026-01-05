@@ -1,0 +1,30 @@
+
+<%- include('partials/header', { title: 'Login - Formbar' }) %>
+
+<div class="container">
+    <h1>LOGIN</h1>
+    
+    <!-- Local username/password form -->
+    <form action="/auth/local" method="post">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn">Login with Username/Password</button>
+    </form>
+
+    <!-- OR separator -->
+    <p><strong>OR</strong></p>
+
+    <!-- OAuth login button -->
+    <% if (typeof AUTH_URL !== 'undefined') { %>
+        <button onclick="window.location.href='<%= AUTH_URL %>'" class="btn">Login with Formbar OAuth</button>
+    <% } %>
+
+    <!-- Show error message if login failed -->
+    <% if (typeof loginError !== 'undefined' && loginError) { %>
+        <div class="error">
+            Login failed. Please try again.
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

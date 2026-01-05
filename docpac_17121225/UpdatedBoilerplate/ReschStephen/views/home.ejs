@@ -1,0 +1,14 @@
+<%- include('partials/header.ejs') %>
+
+    <body>
+        <% if (loggedIn && user) { %>
+            <h1>Welcome, <%= user.username %>!</h1>
+            <a href="/profile">Profile Page</a>
+            <a href="/sockets">Sockets Demonstration</a>
+            <% } else { %>
+                <h1>Welcome to the Home Page</h1>
+                <a href="/login">Login</a>
+                <% } %>
+    </body>
+
+    <%- include('partials/footer.ejs') %>

@@ -1,0 +1,58 @@
+<%- include('partials/header.ejs') %>
+
+    <body>
+        <!--Feature Demonstration-->
+        <h1>Socket.IO Chat Room</h1>
+        <div>
+            <input type="text" id="roomInput" placeholder="Enter room name" />
+            <button id="joinRoomBtn">Join Room</button>
+            <a href="/">Back to home</a>
+        </div>
+        <div id="chatSection" style="display:none;">
+            <h2>Chat Room: <span id="roomName"></span></h2>
+            <div id="messages" style="border:1px solid #000; height:300px; overflow-y:scroll; margin-bottom:10px;">
+            </div>
+            <input type="text" id="messageInput" placeholder="Enter message" />
+            <button id="sendMsgBtn">Send Message</button>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+
+            const joinRoomBtn = document.getElementById('joinRoomBtn');
+            const roomInput = document.getElementById('roomInput');
+            const chatSection = document.getElementById('chatSection');
+            const roomNameDisplay = document.getElementById('roomName');
+            const messagesDiv = document.getElementById('messages');
+            const messageInput = document.getElementById('messageInput');
+            const sendMsgBtn = document.getElementById('sendMsgBtn');
+
+            joinRoomBtn.addEventListener('click', () => {
+                const roomName = roomInput.value.trim();
+                if (roomName) {
+                    socket.emit('joinRoom', roomName);
+                    roomNameDisplay.textContent = roomName;
+                    chatSection.style.display = 'block';
+                }
+            });
+
+            sendMsgBtn.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    socket.emit('chatMessage', message);
+                    messageInput.value = '';
+                }
+            });
+
+            socket.on('chatMessage', (data) => {
+                const msgElem = document.createElement('div');
+                msgElem.textContent = `${data.username}: ${data.message}`;
+                messagesDiv.appendChild(msgElem);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+
+        </script>
+
+    </body>
+
+    <%- include('partials/footer.ejs') %>

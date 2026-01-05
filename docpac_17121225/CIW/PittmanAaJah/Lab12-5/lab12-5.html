@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="jquery-3.2.1.min.js"></script>
+<script>
+//$.noConflict();
+$(document).ready(function(){
+  $("button").click(function(){
+    $("div").fadeToggle("slow"); // This won’t work
+  });
+});
+</script>
+<style>
+.divBlock{
+width: 100px;
+height: 50px;
+
+padding: 15px;
+margin: 15px;
+background-color: red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="divBlock"></div>
+<button>Test</button>
+
+</body>
+</html>

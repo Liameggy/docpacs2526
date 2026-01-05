@@ -1,0 +1,25 @@
+<%- include('partials/header.ejs') %>
+
+    <body>
+        <h1>User Profile</h1>
+        <a href="/">Back to home</a>
+        <p>Name: <%= user.username %>
+        </p>
+        <!--form that allows user to upload files-->
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="profilePic" />
+            <button type="submit">Upload File</button>
+        </form>
+        <!--Show a list of previously uploaded files-->
+        <h2>Uploaded Files</h2>
+        <ul>
+            <% files.forEach(function(file) { %>
+                <li><a href="/uploads/<%= file %>">
+                        <%= file %>
+                    </a></li>
+                <% }); %>
+        </ul>
+
+    </body>
+
+    <%- include('partials/footer.ejs') %>

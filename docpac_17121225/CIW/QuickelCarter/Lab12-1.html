@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lab 12-1</title>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" defer> </script>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+
+  <h3>Welcome to the Date and Time Display</h3>
+    <div id="currentDateTime"></div>
+    <script defer>
+      document.addEventListener('DOMContentLoaded', function() {
+        const now = dayjs();
+        const formattedDate = now.format('MMMM D, YYYY h:mm A');
+        document.getElementById('currentDateTime').textContent = 'Current date and time: ' + formattedDate;
+      });
+  </script>
+
+
+</body>
+</html>

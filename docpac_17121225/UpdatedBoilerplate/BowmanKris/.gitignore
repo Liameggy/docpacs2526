@@ -1,0 +1,12 @@
+# Node.js
+/node_modules/
+package.json
+package-lock.json
+
+# Environment Variables
+.env
+
+# Data Directories
+/data/sessions
+/data/uploads
+/data/*.db

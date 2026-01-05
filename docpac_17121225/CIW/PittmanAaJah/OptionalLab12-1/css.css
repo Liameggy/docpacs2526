@@ -1,0 +1,74 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* common page styles */
+	body
+	{	background: #6595A3;
+		padding: 0 20px}
+
+	.clear
+	{	clear: both;
+		overflow: hidden;
+		height: 0}
+
+	#all
+	{	width: 80%;
+		min-width: 650px;
+		margin: 40px auto 0 auto;
+		background: #FCFFED;
+		padding: 20px 35px}
+
+	h1
+	{	font: 26px tahoma, arial;
+		color: #324143}
+
+	p
+	{	font: 12px tahoma, arial;
+		color: #171F26;
+		margin-bottom: 25px}
+
+	a
+	{	color: #324143}
+
+	
+/* menu styles */
+#menu
+{	margin: 0;
+	padding: 0}
+
+	#menu li
+	{	float: left;
+		list-style: none;
+		font: 12px Tahoma, Arial}
+
+	#menu li a
+	{	display: block;
+		background: #324143;
+		padding: 5px 12px;
+		text-decoration: none;
+		border-right: 1px solid white;
+		width: 70px;
+		color: #EAFFED;
+		white-space: nowrap}
+
+	#menu li a:hover
+	{	background: #24313C}
+		
+		#menu li ul
+		{	margin: 0;
+			padding: 0;
+			position: absolute;
+			visibility: hidden;
+			border-top: 1px solid white}
+		
+			#menu li ul li
+			{	float: none;
+				display: inline}
+			
+			#menu li ul li a
+			{	width: auto;
+				background: #A9C251;
+				color: #24313C}
+			
+			#menu li ul li a:hover
+			{	background: #8EA344}

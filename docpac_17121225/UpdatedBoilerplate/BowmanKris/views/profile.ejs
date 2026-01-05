@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+
+<%- include('partials/header.ejs') %>
+<body>
+    <div id="userInfo">
+        <li><img id="avatar" src="<%= avatarPath %>" alt="no avatar set" /></li>
+        <li id="usernameDisplay">
+            Username <label for="usernameDisplay">(Email if logged in with Formbar)</label>:
+            <%= user %>
+        </li>
+        <li>Dislay Name: <%= displayName %>
+        </li>
+    </div>
+    <br>
+    <form id="avatarForm" enctype="multipart/form-data">
+        <label for="avatarInput">Upload Avatar:</label>
+        <br>
+        <input type="file" id="avatarInput" name="avatar" accept="image/*" />
+        <button type="submit" id="uploadButton">Upload Avatar</button>
+    </form>
+</body>
+<%- include('partials/footer.ejs') %>
+
+<script>
+    const avatarForm = document.getElementById('avatarForm');
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarImg = document.getElementById('avatar');
+
+    avatarForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const file = avatarInput.files[0];
+        if (!file) {
+            alert('Please select a file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        try {
+            const response = await fetch('/upload-avatar', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json(); // Parse JSON response
+            if (response.ok) {
+
+                if (data.redirect) {
+                    // Redirect to the provided URL
+                    window.location.href = data.redirect;
+                } else if (data.avatarPath) {
+                    // Update the avatar image if provided
+                    avatarImg.src = data.avatarPath;
+                    alert('Avatar uploaded successfully!');
+                }
+            } else {
+                console.error('Server error:', data);
+                alert('Failed to upload avatar.');
+            }
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            alert('An error occurred while uploading the avatar.');
+        }
+    });
+</script>
+
+</html>

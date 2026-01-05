@@ -1,0 +1,10 @@
+    <footer style="margin-top: 50px; padding: 20px; background-color: #333; color: white; text-align: center;">
+        <p>&copy; 2025 Formbar App. Built with Node.js and Express.</p>
+        <% if (typeof session !== 'undefined' && session && session.user) { %>
+            <p>Formbar ID: <%= session.user.formbarId %> | User ID: <%= session.user.id %></p>
+        <% } else { %>
+            <p>Not logged in</p>
+        <% } %>
+    </footer>
+</body>
+</html>

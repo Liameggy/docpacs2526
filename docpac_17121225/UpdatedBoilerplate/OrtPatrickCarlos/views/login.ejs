@@ -1,0 +1,41 @@
+<%- include('partials/header', { title: 'Login' }) %> 
+<link rel="stylesheet" href="/css/styles.css">  
+<main>
+    <div class="login-container">
+        <h2>Login</h2>
+        
+        <% if (errorMessage) { %>
+            <div class="error"><%= errorMessage %></div>
+        <% } %>
+
+        <!-- Native Login Form -->
+        <form action="/login" method="POST">
+            <h3>Login with Username/Password</h3>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <!-- Formbar Login Button -->
+        <div>
+            <h3>Login with Formbar</h3>
+            <a href="/login/formbar" class="btn btn-formbar">Login with Formbar Account</a>
+        </div>
+
+        <div class="divider">Don't have an account?</div>
+
+        <!-- Register Link -->
+        <div>
+            <p><a href="/register">Create a new account</a></p>
+        </div>
+    </div>
+</main>
+<%- include('partials/footer') %>

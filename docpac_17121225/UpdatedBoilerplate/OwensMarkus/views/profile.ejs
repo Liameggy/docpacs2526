@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<body>
+    <p>Hallo!!! Youse name shalt be <%= user %>!</p>
+<form id="uploadForm" action="/profile" method="POST" enctype="multipart/form-data">
+    <input type="file" name="profilePic" id="profilePic" accept="image/*">
+    <input type="hidden" name="uid" value="<%= uid %>">
+    <input type="hidden" name="formbarId" value="<%= user %>">
+    <button type="submit">upload file</button>
+</form>
+<br>
+<br>
+<div id="alluploads">
+<h1>Uploaded Files</h1>
+    <!-- Uploaded images will be displayed here -->
+</div>
+
+</body>
+<script>
+    const alluploads = document.getElementById('alluploads');
+    console.log(<%- JSON.stringify(uploads) %>);
+    let ruploads = <%- JSON.stringify(uploads) %>;
+    console.log(ruploads);
+    console.log('First upload:', ruploads[0]);
+    console.log('Upload properties:', Object.keys(ruploads[0]));
+    ruploads.forEach(upload => {
+        const filepathe = document.createElement('p');
+        filepathe.textContent = upload.upload;
+        alluploads.appendChild(filepathe);
+    });
+</script>
+<%- include('partials/footer') %>

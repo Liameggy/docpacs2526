@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "node": "^20.19.6",
+    "socket-io": "^1.0.0",
+    "socket.io-client": "^4.8.1"
+  },
+  "scripts": {
+    "init-database": "node scripts/initDatabase.js",
+    "dev": "nodemon app.js",
+    "run": "node app.js"
+  },
+  "devDependencies": {
+    "connect-sqlite3": "^0.9.16",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.11",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.19.0"
+  }
+}

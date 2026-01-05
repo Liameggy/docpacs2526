@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="/css/styles.css">
+<main>
+    <h1>Socket.IO Demo</h1>
+    <p>Join a room and chat with others in real-time.</p>
+
+    <!-- Room Management -->
+    <section class="room-management">
+        <h2>Join a Room</h2>
+        <input type="text" id="roomName" placeholder="Enter room name" value="main" />
+        <button onclick="joinRoom()">Join Room</button>
+        <p>Current room: <span id="currentRoom">None</span></p>
+    </section>
+
+    <!-- Chat Interface -->
+    <section class="chat">
+        <h2>Chat Messages</h2>
+        <div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-bottom: 10px; background: #f9f9f9;"></div>
+        <div>
+            <input type="text" id="messageInput" placeholder="Type a message..." style="width: 80%;" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </section>
+</main>
+
+<!-- Socket.IO Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    let currentRoom = null;
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        addMessage('[SYSTEM]', 'Connected to server');
+    });
+
+    socket.on('welcome', (data) => {
+        console.log('Welcome message:', data);
+    });
+
+    socket.on('systemMessage', (data) => {
+        addMessage('[SYSTEM]', data.message || '');
+    });
+
+    socket.on('chatMessage', (data) => {
+        const time = new Date(data.timestamp).toLocaleTimeString();
+        addMessage(data.username, `[${time}] ${data.message}`);
+    });
+
+    socket.on('error', (message) => {
+        addMessage('[ERROR]', message);
+    });
+
+    socket.on('joinedRoom', (data) => {
+        addMessage('[SYSTEM]', `Successfully joined room: ${data.roomId}`);
+    });
+
+    socket.on('disconnect', () => {
+        addMessage('[SYSTEM]', 'Disconnected from server');
+    });
+
+    function joinRoom() {
+        const room = document.getElementById('roomName').value || 'main';
+        if (!room.trim()) return alert('Please enter a room name');
+        currentRoom = room;
+        socket.emit('joinRoom', room);
+        document.getElementById('currentRoom').textContent = room;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        if (!text) return alert('Please enter a message');
+        if (!currentRoom) return alert('Please join a room first');
+        socket.emit('chatMessage', { roomId: currentRoom, message: text });
+        input.value = '';
+    }
+
+    function addMessage(username, text) {
+        const messagesDiv = document.getElementById('messages');
+        const msgEl = document.createElement('div');
+        msgEl.style.marginBottom = '5px';
+        msgEl.innerHTML = `<strong>${username}:</strong> ${text}`;
+        messagesDiv.appendChild(msgEl);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Allow Enter key to send message
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+
+<%- include('partials/footer') %>

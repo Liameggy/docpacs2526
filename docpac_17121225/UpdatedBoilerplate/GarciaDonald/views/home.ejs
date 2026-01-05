@@ -1,0 +1,17 @@
+
+<%- include('partials/header', { title: 'Home - Formbar' }) %>
+
+<div class="container">
+    <h1>WELCOME TO THE FORMBAR BOILERPLATE</h1>
+    
+    <% if (!session || !session.user) { %>
+        <p>Please log in to access your profile and upload files.</p>
+        <a href="/login" class="btn">Login</a>
+    <% } else { %>
+        <p>Welcome back, <%= session.user.username %>!</p>
+        <p>You are logged into Formbar with ID: <%= session.user.formbarId %></p>
+        <a href="/profile" class="btn">Go to Profile</a>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
