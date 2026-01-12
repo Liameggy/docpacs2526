@@ -1,0 +1,34 @@
+<%- include('partials/header', { user: user }) %>
+<h3>Profile</h3>
+<p><%= user.username %>'s Profile</p>
+
+<h2>Upload file</h2>
+<form method="post" action="/profile/upload" enctype="multipart/form-data">
+  <input type="file" name="file" />
+  <button type="submit">Upload</button>
+</form>
+
+<h3>Recent uploads</h3>
+
+<% if (!uploads || uploads.length === 0) { %>
+  <p>No uploads yet.</p>
+<% } else { %>
+  <ul>
+    <% uploads.forEach(function(u){ %>
+      <li>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+          <div style="width:120px; height:120px;">
+            <a href="/uploads/<%= encodeURIComponent(u.filename) %>" target="_blank" rel="noopener">
+              <img src="/uploads/<%= encodeURIComponent(u.filename) %>" alt="<%= u.filename %>"
+                   style="max-width:120px; max-height:120px;" />
+            </a>
+          </div>
+            <div><%= u.filename %></div>
+            <div><%= u.createdAt %></div>
+          </div>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<%- include('partials/footer') %>

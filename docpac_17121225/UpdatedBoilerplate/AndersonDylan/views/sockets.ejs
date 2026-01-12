@@ -1,0 +1,236 @@
+<%- include('partials/header', { title: 'Socket.IO Chat Demo' }) %>
+
+<div class="container" style="display: flex; gap: 2rem; margin-top: 1rem;">
+  <!-- Sidebar: Rooms & Members -->
+  <div class="sidebar" style="width: 25%;">
+    <h3>Available Rooms</h3>
+    <ul id="roomsList"></ul>
+
+    <h3>Current Members</h3>
+    <ul id="membersList"></ul>
+
+    <h3>Create Room</h3>
+    <form id="createRoomForm">
+      <input type="text" id="newRoomInput" placeholder="Room name" />
+      <button type="submit">Create</button>
+    </form>
+  </div>
+
+  <!-- Chat area -->
+  <div class="chat" style="width: 75%; display: flex; flex-direction: column;">
+    <div id="messages" class="messages"></div>
+
+    <form id="chatForm" style="margin-top: 0.5rem; display: flex;">
+      <input type="text" id="chatInput" placeholder="Type a message" autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.messages {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.message {
+  margin-bottom: 0.25rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.message .timestamp {
+  color: gray;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.chat input {
+  flex: 1;
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.chat button {
+  padding: 0.4rem 0.6rem;
+  margin-left: 0.25rem;
+  border-radius: 4px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.chat button:hover {
+  background-color: #0056b3;
+}
+
+.sidebar input {
+  width: 70%;
+  padding: 0.3rem;
+  margin-bottom: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.sidebar button {
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  border: none;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #1e7e34;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  margin-bottom: 0.25rem;
+}
+</style>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+
+let currentRoom = null;
+
+const roomsList = document.getElementById('roomsList');
+const membersList = document.getElementById('membersList');
+const messagesDiv = document.getElementById('messages');
+
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+
+const createRoomForm = document.getElementById('createRoomForm');
+const newRoomInput = document.getElementById('newRoomInput');
+
+const currentUser = `<%- JSON.stringify(user) %>`;
+console.log('Logged in as', currentUser);
+
+// Utility to display messages
+function addMessage(text, timestamp = new Date()) {
+  const div = document.createElement('div');
+  div.className = 'message';
+  
+  const timeSpan = document.createElement('span');
+  timeSpan.className = 'timestamp';
+  timeSpan.textContent = `[${new Date(timestamp).toLocaleTimeString()}] `;
+  
+  div.appendChild(timeSpan);
+  div.appendChild(document.createTextNode(text));
+
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Display rooms
+function updateRooms(rooms) {
+  roomsList.innerHTML = '';
+  rooms.forEach(room => {
+    const li = document.createElement('li');
+    li.textContent = `${room.name} (${room.memberCount})`;
+    li.style.cursor = 'pointer';
+    li.onclick = () => {
+      if (room.name !== currentRoom) {
+        socket.emit('joinRoom', room.name);
+      }
+    };
+    roomsList.appendChild(li);
+  });
+}
+
+// Display members
+function updateMembers(members) {
+  membersList.innerHTML = '';
+  members.forEach(member => {
+    const li = document.createElement('li');
+    li.textContent = member.username;
+    membersList.appendChild(li);
+  });
+}
+
+// --- Socket event handlers ---
+socket.on('init', data => {
+  currentRoom = data.currentRoom;
+  updateRooms(data.rooms);
+  updateMembers(data.members);
+  addMessage('You joined the room: ' + currentRoom);
+});
+
+socket.on('chatMessage', msg => {
+  addMessage(`${msg.user.username}: ${msg.message}`, msg.timestamp);
+});
+
+socket.on('userJoined', data => {
+  addMessage(`${data.user.username} joined ${data.room}`);
+});
+
+socket.on('userLeft', data => {
+  addMessage(`${data.user.username} left ${data.room}`);
+});
+
+socket.on('roomMembers', data => {
+  if (data.room === currentRoom) {
+    updateMembers(data.members);
+  }
+});
+
+socket.on('roomChanged', data => {
+  currentRoom = data.room;
+  updateMembers(data.members);
+  addMessage(`You joined the room: ${currentRoom}`);
+});
+
+socket.on('connect', () => {
+  addMessage('Connected to server.');
+});
+
+socket.on('disconnect', () => {
+  addMessage('Disconnected. Attempting to reconnect...');
+});
+
+socket.io.on('reconnect', attempt => {
+  addMessage(`Reconnected after ${attempt} attempt(s).`);
+  if (currentRoom) {
+    socket.emit('joinRoom', currentRoom);
+  }
+});
+
+socket.io.on('reconnect_error', () => {
+  addMessage('Reconnect failed. Retrying...');
+});
+
+// --- Send chat messages ---
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const message = chatInput.value.trim();
+  if (!message) return;
+  socket.emit('chatMessage', message);
+  chatInput.value = '';
+});
+
+// --- Create room ---
+createRoomForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const roomName = newRoomInput.value.trim();
+  if (!roomName) return;
+  socket.emit('joinRoom', roomName);
+  newRoomInput.value = '';
+});
+</script>
+
+<%- include('partials/footer') %>

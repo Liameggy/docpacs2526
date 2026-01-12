@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+    
+    <h1>Welcome to Your Boilerplate App!</h1>
+    
+    <% if (user) { %>
+        <h2>Hello, <%= user %>!</h2>
+        <p>You are successfully logged in.</p>
+        
+        <h3>Available Features:</h3>
+        <ul>
+            <li><a href="/profile">View Profile & Upload Files</a></li>
+            <li><a href="/sockets">Socket.IO Demo</a></li>
+            <li><a href="/api/users">API Endpoint (JSON)</a></li>
+        </ul>
+    <% } else { %>
+        <p>You are not logged in. <a href="/login">Login here</a></p>
+    <% } %>
+</body>
+
+<%- include('partials/footer') %>

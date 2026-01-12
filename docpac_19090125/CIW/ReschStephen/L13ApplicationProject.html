@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Lesson 13 Application Project</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 40px;
+		}
+
+		button {
+			margin-right: 10px;
+			padding: 10px 20px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+
+		#result {
+			margin-top: 20px;
+			font-size: 18px;
+			white-space: pre-wrap;
+		}
+	</style>
+</head>
+
+<body>
+	<h2>CIW JavaScript Specialist</h2>
+	<hr>
+	<h4>AJAX</h4>
+
+	<button id="loadDataWithServerBtn">Load Data with Server</button>
+	<button id="loadDataWithoutServerBtn">Load Data without Server</button>
+	<div id="result"></div>
+
+	<script>
+		const resultDiv = document.getElementById('result');
+
+		//Create function loadDataWithServer
+		function loadDataWithServer() {
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', 'data.txt', true);
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState === 4) {
+					if (xhr.status === 200) {
+						resultDiv.textContent = xhr.responseText;
+					} else {
+						resultDiv.textContent = 'Error loading data;\n\nFailed to fetch\n\nThis error may occur if you are not running a local or\nremote server.';
+					}
+				}
+			};
+			xhr.send();
+		}
+
+		//Create function loadDataWithoutServer
+		function loadDataWithoutServer() {
+			const data = 'Simulated attempt to load data without a server.\n\nModern browsers block AJAX requests to local files\nwhen opening the HTML file directly.\n\nThis security feature prevents loading data due to cross-\norigin restrictions.\n\nTo make AJAX work, you must run your page on a local\nor remote server.';
+			resultDiv.textContent = data;
+		}
+
+		//Add event listeners
+		document.getElementById('loadDataWithServerBtn').addEventListener('click', loadDataWithServer);
+		document.getElementById('loadDataWithoutServerBtn').addEventListener('click', loadDataWithoutServer);
+	</script>
+
+</body>
+
+</html>

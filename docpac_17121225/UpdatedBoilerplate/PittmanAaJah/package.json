@@ -1,0 +1,32 @@
+{
+  "name": "formbar-boilerplate",
+  "version": "1.0.0",
+  "description": "Starter boilerplate for Express + EJS + SQLite + Socket.IO + Formbar auth (stubbed).",
+  "main": "server.js",
+  "scripts": {
+    "init-database": "node scripts/initDatabase.js",
+    "dev": "nodemon server.js",
+    "run": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "connect-sqlite3": "^0.9.0",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "npm": "^11.7.0",
+    "socket.io": "^4.7.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.6",
+    "winston": "^3.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

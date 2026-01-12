@@ -1,0 +1,120 @@
+<%- include('partials/header', { user: user }) %>
+
+<h1>Socket.IO Demo</h1>
+
+<p><a href="/">Back to Home</a> | <% if (user) { %>Logged in as <b><%= user.username %></b><% } else { %>Not logged in<% } %></p>
+
+<div>
+  <label>Room: <input id="room" value="general"></label>
+  <button id="join">Join</button>
+  <span id="currentRoom"></span>
+</div>
+
+<hr>
+<div id="messages"></div>
+
+<div>
+  <input id="msg" placeholder="Type a message">
+</div>
+
+<div>
+  <button id="send">Send</button>
+  <button id="clear">Clear</button>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const messages = document.getElementById('messages');
+  const roomInput = document.getElementById('room');
+  const msgInput = document.getElementById('msg');
+  const joinBtn = document.getElementById('join');
+  const sendBtn = document.getElementById('send');
+  const clearBtn = document.getElementById('clear');
+  const currentRoomLabel = document.getElementById('currentRoom');
+
+  let currentRoom = null;
+  sendBtn.disabled = true;
+
+  function addBlock(time, who, body, type) {
+    const wrap = document.createElement('div');
+
+    const t = document.createElement('div');
+    t.textContent = time;
+    wrap.appendChild(t);
+
+    if (who) {
+      const u = document.createElement('div');
+      u.style.fontWeight = '600';
+      u.textContent = who;
+      wrap.appendChild(u);
+    }
+
+    if (body) {
+      const b = document.createElement('div');
+      b.textContent = body;
+      wrap.appendChild(b);
+    }
+
+    messages.appendChild(wrap);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  socket.on('welcome', (p) => {
+    const name = (p && p.user && p.user.username) || 'guest';
+    addBlock(new Date().toLocaleTimeString(), name, 'connected');
+  });
+
+  socket.on('systemMessage', (m) => {
+    if (m && m.user && m.user.username) {
+      addBlock(new Date().toLocaleTimeString(), m.user.username, m.text, 'system');
+    } else if (m && m.text) {
+      addBlock(new Date().toLocaleTimeString(), 'SYSTEM', m.text, 'system');
+    }
+  });
+
+  socket.on('chatMessage', (m) => {
+    const who = (m && m.user) ? m.user : 'guest';
+    const time = (m && m.ts) ? new Date(m.ts).toLocaleTimeString() : new Date().toLocaleTimeString();
+    addBlock(time, who, m.message, 'chat');
+  });
+
+joinBtn.addEventListener('click', () => {
+  const room = (roomInput.value || 'general').trim();
+  if (!room) return;
+
+  socket.emit('joinRoom', room, (res) => {
+    if (res && res.ok) {
+      currentRoom = res.room;
+      currentRoomLabel.textContent = 'Current room: ' + currentRoom;
+      sendBtn.disabled = false; // ✅ ENABLE SEND
+    } else {
+      addBlock(new Date().toLocaleTimeString(), 'SYSTEM', 'Failed to join room');
+    }
+  });
+});
+
+  function sendMessage() {
+    const room = currentRoom || (roomInput.value || 'general').trim();
+    const msg = (msgInput.value || '').trim();
+    if (!msg) return;
+socket.emit('chatMessage', msg);
+    msgInput.value = '';
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  msgInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    messages.innerHTML = '';
+  });
+
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,149 @@
+<%- include('partials/header') %>
+
+        <h1>User Profile</h1>
+
+        <!-- Success/Error Messages -->
+        <% if (uploadSuccess) { %>
+            <div class="success"><%= uploadSuccess %></div>
+        <% } %>
+        <% if (successMessage) { %>
+            <div class="success"><%= successMessage %></div>
+        <% } %>
+        <% if (uploadError) { %>
+            <div class="error">
+                <% if (uploadError.includes('profile picture')) { %>
+                    ⚠️ Cannot delete this file because it's currently your profile picture. Set a different profile picture first, then delete this file.
+                <% } else { %>
+                    Error: <%= uploadError %>
+                <% } %>
+            </div>
+        <% } %>
+
+        <!-- Account Information -->
+        <div class="profile-section">
+            <h2>Account Information</h2>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div>
+                    <% if (profilePicture) { %>
+                        <img src="/uploads/<%= profilePicture %>" alt="Profile Picture" class="current-pfp">
+                    <% } else { %>
+                        <div class="default-pfp"><%= user.charAt(0).toUpperCase() %></div>
+                    <% } %>
+                </div>
+                <div>
+                    <p><strong>Username:</strong> <%= user %></p>
+                    <p><strong>User ID:</strong> <%= userId %></p>
+                    <p><strong>Total Uploads:</strong> <%= uploads.length %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="profile-section">
+            <h2>Upload New File</h2>
+            <div class="upload-area">
+                <h3>Choose a File</h3>
+                <p>Supported formats: JPG, PNG, GIF images • PDF documents • Text files (.txt) • Markdown (.md) • Word documents (.doc, .docx)</p>
+                <p>Maximum file size: 5MB</p>
+                
+                <form action="/profile/upload" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="file" accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.md,.markdown,.doc,.docx" required style="margin: 15px 0; padding: 10px;">
+                    <br>
+                    <button type="submit" class="btn btn-primary">Upload File</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Your Files -->
+        <div class="profile-section">
+            <h2>Your Files (<%= uploads.length %>)</h2>
+            
+            <% if (uploads.length === 0) { %>
+                <p>No files uploaded yet. Upload your first file above!</p>
+            <% } else { %>
+                <div class="file-grid">
+                    <% uploads.forEach(function(upload) { %>
+                        <div class="file-item">
+                            <% if (upload.fileType.startsWith('image/')) { %>
+                                <img src="/uploads/<%= upload.filename %>" alt="<%= upload.originalName %>">
+                            <% } else { %>
+                                <div class="non-image">
+                                    <div style="font-size: 48px; margin-bottom: 10px;">
+                                        <% if (upload.fileType === 'application/pdf') { %>
+                                            📄
+                                        <% } else if (upload.fileType.startsWith('text/') || upload.originalName.endsWith('.md') || upload.originalName.endsWith('.markdown')) { %>
+                                            📝
+                                        <% } else if (upload.fileType.includes('word') || upload.originalName.endsWith('.doc') || upload.originalName.endsWith('.docx')) { %>
+                                            📃
+                                        <% } else { %>
+                                            📄
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                            <div>
+                                <strong><%= upload.originalName %></strong><br>
+                                <small>
+                                    Size: <%= Math.round(upload.fileSize / 1024) %> KB<br>
+                                    Type: <%= upload.friendlyType %><br>
+                                    Uploaded: <%= new Date(upload.uploadedAt).toLocaleDateString() %>
+                                </small>
+                            </div>                            
+                            <div class="file-actions">
+                                <a href="/uploads/<%= upload.filename %>" target="_blank" class="btn btn-primary">View</a>
+                                
+                                <% if (upload.fileType.startsWith('image/')) { %>
+                                    <form method="POST" action="/profile/set-picture" style="display: inline;">
+                                        <input type="hidden" name="filename" value="<%= upload.filename %>">
+                                        <button type="submit" class="btn btn-success">Set as Profile Pic</button>
+                                    </form>
+                                <% } %>
+                                
+                                <form method="POST" action="/profile/delete" style="display: inline;" 
+                                    onsubmit="return confirm('Are you sure you want to delete this file?')">
+                                    <input type="hidden" name="uploadId" value="<%= upload.id %>">
+                                    <input type="hidden" name="filename" value="<%= upload.filename %>">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        // Client-side file validation
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.txt', '.md', '.markdown', '.doc', '.docx'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            const fileName = file.name.toLowerCase();
+            const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            
+            if (!hasValidExtension) {
+                alert('File type not allowed. Please select: Images (JPG, PNG, GIF), PDFs, Text files, Markdown (.md), or Documents (DOC, DOCX)');
+                e.target.value = '';
+                return;
+            }
+            
+            if (file.size > maxSize) {
+                alert('File is too large. Maximum size is 5MB.');
+                e.target.value = '';
+                return;
+            }
+            
+            // Show file info
+            const fileInfo = document.getElementById('file-info');
+            if (fileInfo) {
+                fileInfo.innerHTML = `Selected: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+            }
+        });
+    </script>
+</body>
+
+<%- include('partials/footer') %>

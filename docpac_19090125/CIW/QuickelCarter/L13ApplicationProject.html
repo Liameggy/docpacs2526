@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 13 Application Project</title>
+		  <style>
+			body {
+			  font-family: Arial, sans-serif;
+			  margin: 40px;
+			}
+			button {
+			  margin-right: 10px;
+			  padding: 10px 20px;
+			  font-size: 16px;
+			  cursor: pointer;
+			}
+			#result {
+			  margin-top: 20px;
+			  font-size: 18px;
+			  white-space: pre-wrap;
+			}
+			#loadwithoutserver {
+			  margin-bottom: 20px;
+			}
+		  </style>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h4>AJAX</h4>
+
+		<button id="loadWithServer">Load Data with Server</button>
+		<button id="loadWithoutServer">Load Data without Server</button>
+
+		<div id="result"></div>
+
+		<script>
+		  const resultDiv = document.getElementById('result');
+
+		//Create function loadDataWithServer
+		  function loadDataWithServer() {
+			resultDiv.textContent = "Loading data from server...";
+			fetch('http://localhost:3000/api/data')
+			  .then(response => {
+				if (!response.ok) {
+				  throw new Error('Network response was not ok ' + response.statusText);
+				}
+				return response.json();
+			  })
+			  .then(data => {
+				resultDiv.textContent = 'Data loaded from server:\n' + JSON.stringify(data, null, 2);
+			  })
+			  .catch(error => {
+				resultDiv.textContent = 'Error loading data: \n\n' + error.message + '\n\nThis error may occur if you are not running a local or\nremote server.';
+			  });
+		  }
+
+		//Create function loadDataWithoutServer
+		  function loadDataWithoutServer() {
+			resultDiv.textContent = "Loading data without server...";
+			setTimeout(() => {
+			  resultDiv.textContent = 'Simulated attempt to load data without a server. \n\nModern browsers block AJAX requests to local files when opening the HTML file directly.';
+			}, 1000);
+		  }
+
+		//Add event listeners
+		document.getElementById('loadWithServer').addEventListener('click', loadDataWithServer);
+		document.getElementById('loadWithoutServer').addEventListener('click', loadDataWithoutServer);
+		  
+		</script>
+
+	</body>
+</html>

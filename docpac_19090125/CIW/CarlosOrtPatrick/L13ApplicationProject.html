@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 13 Application Project</title>
+		  <style>
+			body {
+			  font-family: Arial, sans-serif;
+			  margin: 40px;
+			}
+			button {
+			  margin-right: 10px;
+			  padding: 10px 20px;
+			  font-size: 16px;
+			  cursor: pointer;
+			}
+			#result {
+			  margin-top: 20px;
+			  font-size: 18px;
+			  white-space: pre-wrap;
+			}
+		  </style>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h4>AJAX</h4>
+
+		<button id="loadWithServer">Load Data with Server</button>
+		<button id="loadWithoutServer">Load Data without Server</button>
+
+		<div id="result"></div>
+
+		<script>
+		  const resultDiv = document.getElementById('result');
+
+		//Create function loadDataWithServer
+		  function loadDataWithServer() {
+			resultDiv.textContent = "Loading data from server...";
+			fetch('https://jsonplaceholder.typicode.com/posts/1')
+			  .then(response => {
+				if (!response.ok) {
+				  throw new Error('Network response was not ok ' + response.statusText);
+				}
+				return response.json();
+			  })
+			  .then(data => {
+				resultDiv.textContent = 'Data loaded from server:\n' + JSON.stringify(data, null, 2);
+			  })
+			  .catch(error => {
+				resultDiv.textContent = 'AJAX Error: ' + error.message;
+			  });
+		  }
+
+
+		//Create function loadDataWithoutServer
+		  function loadDataWithoutServer() {
+			resultDiv.textContent = "Loading data without server...";
+			const data = {
+			  userId: 1,
+			  id: 1,
+			  title: "Sample Post",
+			  body: "This is a sample post loaded without AJAX."
+			};
+			resultDiv.textContent = 'Data loaded without server:\n' + JSON.stringify(data, null, 2);
+		  }
+
+		//Add event listeners
+		document.getElementById('loadWithServer').addEventListener('click', loadDataWithServer);
+		document.getElementById('loadWithoutServer').addEventListener('click', loadDataWithoutServer);
+		</script>
+
+	</body>
+</html>

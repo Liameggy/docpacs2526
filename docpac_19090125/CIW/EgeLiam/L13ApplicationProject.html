@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 13 Application Project</title>
+		  <style>
+			body {
+			  font-family: Arial, sans-serif;
+			  margin: 40px;
+			}
+			button {
+			  margin-right: 10px;
+			  padding: 10px 20px;
+			  font-size: 16px;
+			  cursor: pointer;
+			}
+			#result {
+			  margin-top: 20px;
+			  font-size: 18px;
+			  white-space: pre-wrap;
+			}
+		  </style>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h4>AJAX</h4>
+
+		//Create two buttons
+		<button id="serverBtn">Load Data with Server</button>
+		<button id="localBtn">Load Data without Server</button>
+
+		<div id="result"></div>
+
+		<script>
+		  const resultDiv = document.getElementById('result');
+
+		//Create function loadDataWithServer
+		  function loadDataWithServer() {
+			resultDiv.textContent = "Loading data from server...";
+			setTimeout(() => {
+			  const serverData = {
+				status: "success",
+				data: "Data loaded from server successfully!"
+			  };
+			  resultDiv.textContent = 'Server Response:\n' + JSON.stringify(serverData, null, 2);
+			}, 2000);
+		  }
+
+
+		//Create function loadDataWithoutServer
+		  function loadDataWithoutServer() {
+			resultDiv.textContent = "Loading data without server...";
+			setTimeout(() => {
+			  const localData = {
+				status: "success",
+				data: "Data loaded from local storage successfully!"
+			  };
+			  resultDiv.textContent = 'Local Data:\n' + JSON.stringify(localData, null, 2);
+			}, 2000);
+		  }
+
+
+
+		//Add event listeners
+		  document.getElementById('serverBtn').addEventListener('click', loadDataWithServer);
+		  document.getElementById('localBtn').addEventListener('click', loadDataWithoutServer);
+		</script>
+
+	</body>
+</html>
