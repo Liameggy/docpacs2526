@@ -1,0 +1,552 @@
+{
+    "id": 1,
+    "name": "HTML Fundamentals",
+    "sections": [
+        {
+            "id": 1,
+            "name": "Introduction to HTML",
+            "units": [
+                {
+                    "id": 1,
+                    "name": "HTML Basics",
+                    "tasks": [
+                        {
+                            "id": 1,
+                            "name": "HTML Elements",
+                            "type": "task",
+                            "questions": [
+                                {
+                                    "id": 1,
+                                    "ai": true,
+                                    "prompt": "Which part of an HTML element is surrounded by angle brackets?",
+                                    "correctAnswer": "The tag",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "The tag",
+                                        "The attribute",
+                                        "The content",
+                                        "The value"
+                                    ]
+                                },
+                                {
+                                    "id": 2,
+                                    "ai": true,
+                                    "prompt": "What is the purpose of a closing tag in HTML?",
+                                    "correctAnswer": "It marks the end of an element",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "It starts an element",
+                                        "It marks the end of an element",
+                                        "It adds an attribute",
+                                        "It displays text"
+                                    ]
+                                },
+                                {
+                                    "id": 3,
+                                    "ai": true,
+                                    "prompt": "Which HTML element is written correctly?",
+                                    "correctAnswer": "<p>Hello</p>",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "<p>Hello>",
+                                        "<p>Hello<p>",
+                                        "<p>Hello</p>",
+                                        "p>Hello</p>"
+                                    ]
+                                },
+                                {
+                                    "id": 4,
+                                    "ai": true,
+                                    "prompt": "What is the content of the following element: <h1>Title</h1>?",
+                                    "correctAnswer": "Title",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "<h1>",
+                                        "</h1>",
+                                        "h1",
+                                        "Title"
+                                    ]
+                                },
+                                {
+                                    "id": 5,
+                                    "ai": true,
+                                    "prompt": "What part of an HTML element provides additional information?",
+                                    "correctAnswer": "Attribute",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "Tag",
+                                        "Attribute",
+                                        "Content",
+                                        "Closing tag"
+                                    ]
+                                },
+                                {
+                                    "id": 6,
+                                    "ai": true,
+                                    "prompt": "Which attribute is commonly used to identify an element uniquely?",
+                                    "correctAnswer": "id",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "id",
+                                        "class",
+                                        "style",
+                                        "src"
+                                    ]
+                                },
+                                {
+                                    "id": 7,
+                                    "ai": true,
+                                    "prompt": "Which HTML element does NOT require a closing tag?",
+                                    "correctAnswer": "<img>",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "<p>",
+                                        "<div>",
+                                        "<img>",
+                                        "<h1>"
+                                    ]
+                                },
+                                {
+                                    "id": 8,
+                                    "ai": true,
+                                    "prompt": "Where are attributes placed in an HTML element?",
+                                    "correctAnswer": "Inside the opening tag",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "Inside the closing tag",
+                                        "Inside the opening tag",
+                                        "Between elements",
+                                        "After the content"
+                                    ]
+                                },
+                                {
+                                    "id": 9,
+                                    "ai": true,
+                                    "prompt": "What is the correct syntax for an attribute?",
+                                    "correctAnswer": "name=\"value\"",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "name=\"value\"",
+                                        "name:value",
+                                        "name=value;",
+                                        "\"name\"=value"
+                                    ]
+                                },
+                                {
+                                    "id": 10,
+                                    "ai": true,
+                                    "prompt": "Which part of <a href=\"page.html\">Link</a> is the attribute value?",
+                                    "correctAnswer": "page.html",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "a",
+                                        "href",
+                                        "Link",
+                                        "page.html"
+                                    ]
+                                },
+                                {
+                                    "id": 21,
+                                    "ai": true,
+                                    "prompt": "What is the opening tag in the following element: <div class=\"box\">Content</div>?",
+                                    "correctAnswer": "<div class=\"box\">",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<div class=\"box\">",
+                                        "</div>",
+                                        "class=\"box\"",
+                                        "Content"
+                                    ]
+                                },
+                                {
+                                    "id": 22,
+                                    "ai": true,
+                                    "prompt": "Which HTML element is used to display a paragraph of text?",
+                                    "correctAnswer": "<p>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<h1>",
+                                        "<p>",
+                                        "<div>",
+                                        "<span>"
+                                    ]
+                                },
+                                {
+                                    "id": 23,
+                                    "ai": true,
+                                    "prompt": "Which part of an HTML element is optional?",
+                                    "correctAnswer": "Attributes",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "Opening tag",
+                                        "Closing tag",
+                                        "Attributes",
+                                        "Tag name"
+                                    ]
+                                },
+                                {
+                                    "id": 24,
+                                    "ai": true,
+                                    "prompt": "What is wrong with this HTML element: <p>Hello<p>?",
+                                    "correctAnswer": "The closing tag is incorrect",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "The closing tag is incorrect",
+                                        "The opening tag is missing",
+                                        "Attributes are missing",
+                                        "Nothing is wrong"
+                                    ]
+                                },
+                                {
+                                    "id": 25,
+                                    "ai": true,
+                                    "prompt": "Which attribute is commonly used to apply CSS styling?",
+                                    "correctAnswer": "class",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "href",
+                                        "class",
+                                        "src",
+                                        "alt"
+                                    ]
+                                },
+                                {
+                                    "id": 26,
+                                    "ai": true,
+                                    "prompt": "What does the \"alt\" attribute describe in an <img> element?",
+                                    "correctAnswer": "Alternative text for the image",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "The image size",
+                                        "The image file type",
+                                        "The image location",
+                                        "Alternative text for the image"
+                                    ]
+                                },
+                                {
+                                    "id": 27,
+                                    "ai": true,
+                                    "prompt": "Which HTML element is used to create a clickable link?",
+                                    "correctAnswer": "<a>",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<a>",
+                                        "<link>",
+                                        "<href>",
+                                        "<url>"
+                                    ]
+                                },
+                                {
+                                    "id": 28,
+                                    "ai": true,
+                                    "prompt": "Where is the text content of an HTML element located?",
+                                    "correctAnswer": "Between the opening and closing tags",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "Inside the attribute",
+                                        "Inside the tag name",
+                                        "Between the opening and closing tags",
+                                        "After the closing tag"
+                                    ]
+                                },
+                                {
+                                    "id": 29,
+                                    "ai": true,
+                                    "prompt": "Which HTML element is considered a container element?",
+                                    "correctAnswer": "<div>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<img>",
+                                        "<div>",
+                                        "<br>",
+                                        "<meta>"
+                                    ]
+                                },
+                                {
+                                    "id": 30,
+                                    "ai": true,
+                                    "prompt": "Which example correctly shows an element with an attribute?",
+                                    "correctAnswer": "<p class=\"text\">Hello</p>",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<p class=\"text\">Hello</p>",
+                                        "<p>class=\"text\" Hello</p>",
+                                        "<p>Hello</class></p>",
+                                        "<class p=\"text\">Hello</class>"
+                                    ]
+                                }
+                            ]
+                        }, 
+                        {
+                            "id": 1,
+                            "type": "task",
+                            "name": "HTML Documents",
+                            "questions": [
+                                {
+                                    "id": 11,
+                                    "ai": true,
+                                    "prompt": "Which element is required to start an HTML document?",
+                                    "correctAnswer": "<!DOCTYPE html>",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<!DOCTYPE html>",
+                                        "<html>",
+                                        "<head>",
+                                        "<body>"
+                                    ]
+                                },
+                                {
+                                    "id": 12,
+                                    "ai": true,
+                                    "prompt": "Which element wraps all visible content on a web page?",
+                                    "correctAnswer": "<body>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<head>",
+                                        "<body>",
+                                        "<html>",
+                                        "<title>"
+                                    ]
+                                },
+                                {
+                                    "id": 13,
+                                    "ai": true,
+                                    "prompt": "Which section of an HTML document contains metadata?",
+                                    "correctAnswer": "<head>",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "<body>",
+                                        "<footer>",
+                                        "<head>",
+                                        "<main>"
+                                    ]
+                                },
+                                {
+                                    "id": 14,
+                                    "ai": true,
+                                    "prompt": "Which element defines the title shown in the browser tab?",
+                                    "correctAnswer": "<title>",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "<meta>",
+                                        "<header>",
+                                        "<h1>",
+                                        "<title>"
+                                    ]
+                                },
+                                {
+                                    "id": 15,
+                                    "ai": true,
+                                    "prompt": "Which element contains the entire HTML document?",
+                                    "correctAnswer": "<html>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<body>",
+                                        "<html>",
+                                        "<head>",
+                                        "<main>"
+                                    ]
+                                },
+                                {
+                                    "id": 16,
+                                    "ai": true,
+                                    "prompt": "Where should meta tags be placed?",
+                                    "correctAnswer": "Inside the head element",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "Inside the head element",
+                                        "Inside the body element",
+                                        "After the html tag",
+                                        "At the bottom of the page"
+                                    ]
+                                },
+                                {
+                                    "id": 17,
+                                    "ai": true,
+                                    "prompt": "Which is a correct basic HTML document structure?",
+                                    "correctAnswer": "html > head + body",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "head > html > body",
+                                        "body > html > head",
+                                        "html > head + body",
+                                        "doctype > body > head"
+                                    ]
+                                },
+                                {
+                                    "id": 18,
+                                    "ai": true,
+                                    "prompt": "What is the purpose of the <meta charset=\"UTF-8\"> tag?",
+                                    "correctAnswer": "It defines the character encoding",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "It sets the page title",
+                                        "It defines the character encoding",
+                                        "It links CSS",
+                                        "It displays text"
+                                    ]
+                                },
+                                {
+                                    "id": 19,
+                                    "ai": true,
+                                    "prompt": "Which element is NOT placed inside the head?",
+                                    "correctAnswer": "<p>",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "<meta>",
+                                        "<title>",
+                                        "<link>",
+                                        "<p>"
+                                    ]
+                                },
+                                {
+                                    "id": 20,
+                                    "ai": true,
+                                    "prompt": "Why is proper HTML document structure important?",
+                                    "correctAnswer": "It helps browsers correctly display the page",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "It helps browsers correctly display the page",
+                                        "It makes pages load slower",
+                                        "It hides content",
+                                        "It removes errors automatically"
+                                    ]
+                                },
+                                {
+                                    "id": 31,
+                                    "ai": true,
+                                    "prompt": "Which element should appear only once in a valid HTML document?",
+                                    "correctAnswer": "<html>",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<html>",
+                                        "<p>",
+                                        "<div>",
+                                        "<h1>"
+                                    ]
+                                },
+                                {
+                                    "id": 32,
+                                    "ai": true,
+                                    "prompt": "Which element tells the browser what version of HTML is being used?",
+                                    "correctAnswer": "<!DOCTYPE html>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<meta>",
+                                        "<!DOCTYPE html>",
+                                        "<html>",
+                                        "<head>"
+                                    ]
+                                },
+                                {
+                                    "id": 33,
+                                    "ai": true,
+                                    "prompt": "What happens if the <head> element is missing from an HTML document?",
+                                    "correctAnswer": "The browser may still display the page but metadata may be missing",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "The page will not load at all",
+                                        "The body will be ignored",
+                                        "The browser may still display the page but metadata may be missing",
+                                        "HTML will stop working"
+                                    ]
+                                },
+                                {
+                                    "id": 34,
+                                    "ai": true,
+                                    "prompt": "Which element contains links to external CSS files?",
+                                    "correctAnswer": "<link>",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "<style>",
+                                        "<css>",
+                                        "<meta>",
+                                        "<link>"
+                                    ]
+                                },
+                                {
+                                    "id": 35,
+                                    "ai": true,
+                                    "prompt": "Which element should directly contain both the head and body?",
+                                    "correctAnswer": "<html>",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "<html>",
+                                        "<main>",
+                                        "<doctype>",
+                                        "<page>"
+                                    ]
+                                },
+                                {
+                                    "id": 36,
+                                    "ai": true,
+                                    "prompt": "Where should the <title> element be placed?",
+                                    "correctAnswer": "Inside the head element",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "Inside the body element",
+                                        "Inside the head element",
+                                        "At the top of the page",
+                                        "After the html tag"
+                                    ]
+                                },
+                                {
+                                    "id": 37,
+                                    "ai": true,
+                                    "prompt": "Which of the following is considered visible page content?",
+                                    "correctAnswer": "Text inside the body element",
+                                    "correctIndex": 2,
+                                    "answers": [
+                                        "Meta tags",
+                                        "The title element",
+                                        "Text inside the body element",
+                                        "The doctype"
+                                    ]
+                                },
+                                {
+                                    "id": 38,
+                                    "ai": true,
+                                    "prompt": "Why is the <!DOCTYPE html> declaration important?",
+                                    "correctAnswer": "It helps browsers render the page correctly",
+                                    "correctIndex": 0,
+                                    "answers": [
+                                        "It helps browsers render the page correctly",
+                                        "It adds content to the page",
+                                        "It creates the head element",
+                                        "It styles the page"
+                                    ]
+                                },
+                                {
+                                    "id": 39,
+                                    "ai": true,
+                                    "prompt": "Which element is used to define metadata such as author or viewport settings?",
+                                    "correctAnswer": "<meta>",
+                                    "correctIndex": 3,
+                                    "answers": [
+                                        "<data>",
+                                        "<info>",
+                                        "<header>",
+                                        "<meta>"
+                                    ]
+                                },
+                                {
+                                    "id": 40,
+                                    "ai": true,
+                                    "prompt": "Which HTML document structure follows best practice?",
+                                    "correctAnswer": "<!DOCTYPE html> → <html> → <head> + <body>",
+                                    "correctIndex": 1,
+                                    "answers": [
+                                        "<html> → <body> → <head>",
+                                        "<!DOCTYPE html> → <html> → <head> + <body>",
+                                        "<body> → <html> → <head>",
+                                        "<doctype> → <head> → <body>"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

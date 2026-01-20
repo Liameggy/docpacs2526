@@ -1,0 +1,58 @@
+Use this to start polls after setting up Formplug
+
+
+
+◆Comment：Make sure you have your list of students from your class.
+：       ：Then reset the poll.
+◆Plugin Command：Formplug, Class Update
+◆Common Event：Reset Poll
+◆Comment：Start a poll.
+◆Plugin Command：Formplug, Start Poll
+：              ：Prompt = Who is the best teacher?
+：              ：Answer = Mr. Smith
+：              ：Response Green = Mr. Smith
+：              ：Response Blue = 
+：              ：Response Yellow = 
+：              ：Response Red = Not Mr. Smith
+：              ：Enable Text Answers = false
+◆Comment：Wait until the poll is detected as running on formbar
+◆Loop
+  ◆If：Poll Running is OFF
+    ◆Wait：1 frame
+    ◆
+  ：Else
+    ◆Break Loop
+    ◆
+  ：End
+  ◆
+：Repeat Above
+◆Comment：Show it on the screen.
+◆Plugin Command：Formplug, Show Poll Windows
+◆Comment：Wait until the poll is marked as finished.
+◆Loop
+  ◆If：Poll Finished is OFF
+    ◆Wait：1 frame
+    ◆
+  ：Else
+    ◆Common Event：Clear UI
+    ◆Break Loop
+    ◆
+  ：End
+  ◆
+：Repeat Above
+◆Comment：Determine what the majority was, or if the "correct" option was picked.
+◆If：Majority = 1
+  ◆Text：None, None, Window, Bottom
+  ：    ：Choice 1
+  ◆
+：End
+◆If：Majority = 2
+  ◆Text：None, None, Window, Bottom
+  ：    ：Choice 2
+  ◆
+：End
+◆If：Majority = Correct
+  ◆Text：None, None, Window, Bottom
+  ：    ：Correct!
+  ◆
+：End

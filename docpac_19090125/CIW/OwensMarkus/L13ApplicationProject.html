@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lesson 13 Application Project</title>
+		  <style>
+			body {
+			  font-family: Arial, sans-serif;
+			  margin: 40px;
+			}
+			button {
+			  margin-right: 10px;
+			  padding: 10px 20px;
+			  font-size: 16px;
+			  cursor: pointer;
+			}
+			#result {
+			  margin-top: 20px;
+			  font-size: 18px;
+			  white-space: pre-wrap;
+			}
+		  </style>
+    </head>
+	
+	<body>
+	  <h2>CIW JavaScript Specialist</h2>
+	  <hr>
+		<h4>AJAX</h4>
+
+	
+		<button id="loadWithS">Load Data with Server</button>
+		<button id="loadWithoutS">Load Data without Server</button>
+
+		<div id="result"></div>
+
+		<script>
+		  const resultDiv = document.getElementById('result');
+
+		//Create function loadDataWithServer fetch external text file
+		  function loadDataWithServer() {
+			fetch('data.txt')
+			  .then(response => {
+				return response.json();
+			  })
+			  .then(data => {
+				resultDiv.textContent = JSON.stringify(data, null, 2);
+			  })
+			  .catch(error => {
+				resultDiv.textContent = 'Error loading data: failed to fetch rthis eoror if youse not run local oro remoter servebr';
+			  });
+		  }
+
+		//Create function loadDataWithoutServer
+		  function loadDataWithoutServer() {
+			resultDiv.textContent = 'Simulated Data:\n' + JSON.stringify({
+			  name: "Jhon 'Son of Joan' Johnson",
+			  age: 205,
+			  city: "The City of Angles, Saxons, and Jutes"
+		  }, null, 2)+'modern broweerts block AJAX requestd to local filews when openign html filw er directly. This securituy fetuerw prevrentys losading data due to cross-oringin restirtions. To amke AJAX workj, your must run your oapsdge ona plocal or remotrte servert';
+		  }
+		document.getElementById('loadWithoutS').addEventListener('click', () => {
+			loadDataWithoutServer();
+		});
+		document.getElementById('loadWithS').addEventListener('click', () => {
+			loadDataWithServer();
+		  });
+
+
+
+
+		//Add event listeners
+		  
+		</script>
+
+	</body>
+</html>
