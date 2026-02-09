@@ -1,0 +1,18 @@
+{
+    "name": "multiplayer-backend",
+    "description": "A multiplayer backend for the MultiplayerMZ plugin.",
+    "version": "1.0.0",
+    "author": "mason26611",
+    "main": "app.js",
+    "devDependencies": {
+        "nodemon": "^3.1.11"
+    },
+    "scripts": {
+        "dev": "nodemon app.js"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "express": "^5.2.1",
+        "socket.io": "^4.8.3"
+    }
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        @font-face {
+            font-family: 'Outfit';
+            font-style: normal;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJuktqQ4E.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'Outfit';
+            font-style: normal;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: "Outfit", Arial, sans-serif;
+            background: linear-gradient(135deg, #072438 30%, #000c15 100%);
+            color: white;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+        #opponent-info{
+            font-size: 36px;
+            -webkit-text-stroke: 0.5px white;
+            text-align: center;
+            margin: auto;
+        }
+        #info-display {
+            font-size: 32px;
+            -webkit-text-stroke: 0.5px white;
+            text-align: center;
+            margin: auto;
+        }
+        symbol {
+            font-size: 24px;
+            -webkit-text-stroke: 0.5px white;
+            text-align: right;
+            margin: auto;
+        }
+        #gameBoard {
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            transition: transform 0.3s ease;
+        }
+        .row {
+            display: flex;
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            max-width: fit-content;
+        }
+        .cell {
+            outline: 3px solid rgb(255, 255, 255);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            min-width : 100px;
+            min-height : 100px;
+            width: 24vh;
+            height: 24vh;
+            max-width: 24vh;
+            max-height: 24vh;
+            aspect-ratio: 1 / 1;
+        }
+        .unclickable {
+            pointer-events: none;
+            cursor: default;
+            outline: 3px solid rgba(255, 255, 255, 0.603);
+        }
+        #newGameButton {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <div id="opponent-info">Opponent: ...</div>
+    <div id="symbol">Playing as: </div>
+    </header>
+    <div id="gameBoard">
+        <div class="row">
+        <div class="cell" onclick="makeMove(0)"></div>
+        <div class="cell" onclick="makeMove(1)"></div>
+        <div class="cell" onclick="makeMove(2)"></div>
+        </div>
+        <div class="row">
+        <div class="cell" onclick="makeMove(3)"></div>
+        <div class="cell" onclick="makeMove(4)"></div>
+        <div class="cell" onclick="makeMove(5)"></div>
+        </div>
+        <div class="row">
+        <div class="cell" onclick="makeMove(6)"></div>
+        <div class="cell" onclick="makeMove(7)"></div>
+        <div class="cell" onclick="makeMove(8)"></div>
+        </div>
+    </div>
+    <div id="info-display">Looking for room...</div>
+    <button id="newGameButton" style="display:none;" onclick="newGame()">New Game</button>
+</body>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const infoDisplay = document.getElementById('info-display');
+    const opponentInfo = document.getElementById('opponent-info');
+    const symbolDisplay = document.getElementById('symbol');
+    const gameBoard = document.getElementById('gameBoard');
+    const cells = document.getElementsByClassName('cell');
+    let gameStarted = false;
+    let turn;
+    let symbol;
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('joinGame', {username: null});
+    });
+    socket.on('requestUsername', () => {
+        const username = prompt("Enter your username:");
+        if (username && username.trim() !== '') {
+            socket.username = username.trim();
+            socket.emit('joinGame', {username: socket.username});
+        } else {
+            socket.emit('joinGame', {username: null});
+        }
+    });
+    socket.on('roomJoined', (data) => {
+        symbol = data.symbol;
+        console.log('Joined room:', data.roomId, 'as', data.symbol);
+        infoDisplay.innerText = `You are '${data.symbol}'. Waiting for opponent...`;
+        symbolDisplay.innerText = `Playing as: ${data.symbol}`;
+        opponentInfo.innerText = `Opponent: Waiting for opponent...`;
+        for (let i = 0; i < cells.length; i++) {
+            cells[i].innerText = '';
+            cells[i].classList.add('unclickable');
+        }
+    });
+    socket.on('startGame', (data) => {
+        turn = data.turn;
+        console.log('Received startGame event:', data);
+        console.log('Game started with players:', data.players);
+        if(data.players[0] === data.players[1]){
+            opponentInfo.innerText = `Opponent: ${data.players[0]}`;
+        } else {
+            opponentInfo.innerText = `Opponent: ${data.players.find(player => player !== socket.username) || 'Unknown'}`;
+        }
+        console.log(data.turn, symbol);
+        if (data.turn == symbol) {
+            infoDisplay.innerText = `Game started! It's your turn.`;
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].classList.remove('unclickable');
+            }
+        } else {
+            infoDisplay.innerText = 'Game started! It\'s opponent\'s turn.';
+            gameBoard.style.transform = 'scale(0.95)';
+        }
+        gameStarted = true;
+    });
+    socket.on('updateBoard', (data) => {
+        console.log('Board updated:', data.board, 'Next turn:', data.turn);
+        for (let i = 0; i < cells.length; i++) {
+            cells[i].innerText = data.board[i] ? data.board[i] : '';
+        }
+        infoDisplay.innerText = `It's ${data.turn == symbol ? 'your' : 'opponent\'s'} turn.`;
+        turn = data.turn;
+        if (turn == symbol) {
+            gameBoard.style.transform = 'scale(1)';
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].classList.remove('unclickable');
+            }
+        } else {
+            gameBoard.style.transform = 'scale(0.95)';
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].classList.add('unclickable');
+            }
+        }
+    });
+    socket.on('gameOver', (data) => {
+        console.log('Game over! Winner:', data.winner);
+        if (data.winner === symbol) {
+            infoDisplay.innerText = 'You win!';
+        } else if (data.winner === null) {
+            infoDisplay.innerText = 'It\'s a draw!';
+        } else if (data.winner === undefined) {
+            infoDisplay.innerText = 'Your opponent has forfeited. You win!';
+        } else {
+            infoDisplay.innerText = 'You lose!';
+        }
+        gameBoard.style.transform = 'scale(1)';
+        for (let i = 0; i < cells.length; i++) {
+            cells[i].classList.add('unclickable');
+        }
+        gameStarted = false;
+        document.getElementById('newGameButton').style.display = 'block';
+    });
+    function makeMove(cellIndex) {
+        console.log('Attempting to make move at cell:', cellIndex);
+        console.log('Current turn:', turn, 'Your symbol:', symbol);
+        if (turn == symbol && gameStarted) {
+            socket.emit('makeMove', {position: cellIndex});
+        }
+    }
+    function newGame() {
+        socket.emit('joinGame', {username: null});
+        infoDisplay.innerText = 'Looking for room...';
+        document.getElementById('newGameButton').style.display = 'none';
+    }
+</script>
