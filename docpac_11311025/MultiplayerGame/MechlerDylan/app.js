@@ -5,9 +5,10 @@ const session = require('express-session')
 const { createServer } = require('node:http')
 const { join } = require("node:path")
 const { Server } = require("socket.io")
+//add encryption if necessary
 const app = express();
 const AUTH_URL = 'https://formbeta.yorktechapps.com'
-const THIS_URL = 'http://172.16.3.240:3000/login'
+const THIS_URL = 'http://172.16.3.208:3000/login'
 const server = createServer(app);
 const io = new Server(server);
 var Player = { Player1: null, Player2: null }
@@ -18,7 +19,6 @@ var spellList = [
     { Name: "Earth", Damage: 5, Weakness: 'Air' },
     { Name: "Air", Damage: 5, Weakness: 'Fire' }
 ]
-var Rooms = []
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,118 +49,83 @@ function isAuthenticated(req, res, next) {
 };
 
 function findRoom(user) {
-    var roomAndUser = 0
-    var roomMade = false
-    for (let i = 0; (i <= Rooms.length) && (!roomMade); i++) {
-        if (i < Rooms.length) {
-            if (Rooms[i].Player1 == null) {
-                Rooms[i].Player1 = user
-                roomAndUser = (i + 0.1)
-                roomMade = true
-            } else if (Rooms[i].Player2 == null) {
-                Rooms[i].Player2 = user
-                roomAndUser = (i + 0.2)
-                roomMade = true
-            }
-        } else if (i == Rooms.length) {
-            createRoom(i)
-            startGame(i)
-            roomMade = true
-            Rooms[i].Player1 = user
-            roomAndUser = (i + 0.1)
-        }
-    };
-    return roomAndUser
-};
-
-function createRoom(room) {
-    Rooms.push({
-        Player1: null,
-        Player2: null,
-        roomNum: room.toString(),
-        Player1Health: 100,
-        Player2Health: 100,
-        turn: 1,
-        Player1Spell: null,
-        Player2Spell: null,
-        roundState: "going"
-    })
-}
-
-function returnRoom(room) {
-    for (let i = 0; i <= Rooms.length; i++) {
-        if (i < Rooms.length) {
-            if (Rooms[i].roomNum == room) {
-                return i
-            }
-        } else if (i == Rooms.length) {
-            console.log("This Room Does Not Exist")
-        }
+    if (!Player.Player1) {
+        Player.Player1 = user
+        startGame();
+        return 1
+    } else if (!Player.Player2) {
+        Player.Player2 = user
+        return 2
     }
-}
-
-function startGame(room) {
-    Rooms[room].Player1 = null
-    Rooms[room].Player2 = null
-    Rooms[room].Player1Health = 100
-    Rooms[room].Player2Health = 100
-    Rooms[room].turn = 1
-    Rooms[room].Player1Spell = null
-    Rooms[room].Player2Spell = null
-    Rooms[room].roundState = "going"
 };
 
-function spellCast(spell, index) {
-    if (Rooms[index].turn == 1) {
-        Rooms[index].Player1Spell = spell
-        Rooms[index].turn += 1
-    } else if (Rooms[index].turn == 2) {
-        Rooms[index].Player2Spell = spell
-        if (spellList[Rooms[index].Player1Spell].Weakness == spellList[Rooms[index].Player2Spell].Name) {
-            Rooms[index].Player1Health -= ((spellList[Rooms[index].Player2Spell].Damage) * 2)
-        } else if (spellList[Rooms[index].Player2Spell].Weakness == spellList[Rooms[index].Player1Spell].Name) {
-            Rooms[index].Player2Health -= ((spellList[Rooms[index].Player1Spell].Damage) * 2)
+function startGame() {
+    Player.Player1Health = 100
+    Player.Player2Health = 100
+    Player.turn = 1
+    Player.Player1Spell = null
+    Player.Player2Spell = null
+    Player.roundState = "going"
+};
+
+function spellCast(spell) {
+    if (Player.turn == 1) {
+        Player.Player1Spell = spell
+        console.log(Player.Player1Spell)
+        console.log(spellList[Player.Player1Spell])
+        Player.turn += 1
+        console.log('Turn', Player.turn)
+    } else if (Player.turn == 2) {
+        Player.Player2Spell = spell
+        console.log(Player.Player2Spell)
+        console.log(spellList[Player.Player2Spell])
+        if (spellList[Player.Player1Spell].Weakness == spellList[Player.Player2Spell].Name) {
+            Player.Player1Health -= ((spellList[Player.Player2Spell].Damage) * 2)
+        } else if (spellList[Player.Player2Spell].Weakness == spellList[Player.Player1Spell].Name) {
+            Player.Player2Health -= ((spellList[Player.Player1Spell].Damage) * 2)
         } else {
-            Rooms[index].Player1Health -= (spellList[Rooms[index].Player2Spell].Damage)
-            Rooms[index].Player2Health -= (spellList[Rooms[index].Player1Spell].Damage)
+            Player.Player1Health -= (spellList[Player.Player2Spell].Damage)
+            Player.Player2Health -= (spellList[Player.Player1Spell].Damage)
         }
-        Rooms[index].turn -= 1
-        Rooms[index].roundState = "over"
+        Player.turn -= 1
+        Player.roundState = "over"
     }
-    if (Rooms[index].Player1Spell == null) {
+    console.log(Player.Player1Health)
+    console.log(Player.Player2Health)
+    if (Player.Player1Spell == null) {
         console.log("P1 Spell is null")
     } else {
-        Rooms[index].Player1Spell = spellList[Rooms[index].Player1Spell].Name
+        Player.Player1Spell = spellList[Player.Player1Spell].Name
     }
-    if (Rooms[index].Player2Spell == null) {
+    if (Player.Player2Spell == null) {
         console.log("p2 Spell is null")
     } else {
-        Rooms[index].Player2Spell = spellList[Rooms[index].Player2Spell].Name
+        Player.Player2Spell = spellList[Player.Player2Spell].Name
     }
 };
 
-function spellToIndex(index) {
-    if (Rooms[index].Player1Spell == "Fire") {
-        Rooms[index].Player1Spell = 0
-    } else if (Rooms[index].Player1Spell == "Water") {
-        Rooms[index].Player1Spell = 1
-    } else if (Rooms[index].Player1Spell == "Lightning") {
-        Rooms[index].Player1Spell = 2
-    } else if (Rooms[index].Player1Spell == "Earth") {
-        Rooms[index].Player1Spell = 3
-    } else if (Rooms[index].Player1Spell == "Air") {
-        Rooms[index].Player1Spell = 4
+function spellToIndex() {
+    if (Player.Player1Spell == "Fire") {
+        Player.Player1Spell = 0
+    } else if (Player.Player1Spell == "Water") {
+        Player.Player1Spell = 1
+    } else if (Player.Player1Spell == "Lightning") {
+        Player.Player1Spell = 2
+    } else if (Player.Player1Spell == "Earth") {
+        Player.Player1Spell = 3
+    } else if (Player.Player1Spell == "Air") {
+        Player.Player1Spell = 4
     }
-    if (Rooms[index].Player2Spell == "Fire") {
-        Rooms[index].Player2Spell = 0
-    } else if (Rooms[index].Player2Spell == "Water") {
-        Rooms[index].Player2Spell = 1
-    } else if (Rooms[index].Player2Spell == "Lightning") {
-        Rooms[index].Player2Spell = 2
-    } else if (Rooms[index].Player2Spell == "Earth") {
-        Rooms[index].Player2Spell = 3
-    } else if (Rooms[index].Player2Spell == "Air") {
-        Rooms[index].Player2Spell = 4
+    if (Player.Player2Spell == "Fire") {
+        Player.Player2Spell = 0
+    } else if (Player.Player2Spell == "Water") {
+        Player.Player2Spell = 1
+    } else if (Player.Player2Spell == "Lightning") {
+        Player.Player2Spell = 2
+    } else if (Player.Player2Spell == "Earth") {
+        Player.Player2Spell = 3
+    } else if (Player.Player2Spell == "Air") {
+        Player.Player2Spell = 4
     }
 };
 
@@ -188,40 +153,38 @@ io.on('connection', (socket) => {
     const user = data.user
     const id = socket.id
     console.log("User Connected: ", user);
-    var findRoomData = findRoom(id);
-    var room = Math.floor(findRoomData)
-    var userNum = (Math.round((findRoomData - room) * 10))
-    room = room.toString()
-    roomIndex = returnRoom(room)
-    socket.join(room);
-    socket.currentRoom = room
-    io.to(room).emit('connected', userNum, room);
-    io.to(room).emit('playerJoined', Rooms[roomIndex]);
+    socket.join("some room");
+    var userNum = findRoom(id);
+    io.emit('connected', userNum);
+    io.to("some room").emit('playerJoined', Player);
     socket.on('playState', (playState) => {
+        console.log(playState)
         if (playState) {
-            io.to(room).emit('playable')
+            io.emit('playable')
         }
     });
-    socket.on('spell', (spell, msg) => {
-        let indx = returnRoom(msg)
-        spellCast(spell, indx)
-        io.to(msg).emit('gameUpdate', Rooms[indx])
-        spellToIndex(indx);
-        if (Rooms[indx].roundState == "over") {
-            Rooms[indx].roundState = "going"
+    socket.on('spell', (spell) => {
+        console.log(user)
+        spellCast(spell)
+        io.emit('gameUpdate', Player)
+        spellToIndex();
+        if (Player.roundState == "over") {
+            Player.roundState = "going"
         }
 
     });
     socket.on('disconnect', () => {
         console.log("User Disconnected: ", user)
-        io.to(socket.currentRoom).emit('opponent left')
+        startGame();
+        io.emit('opponent left')
     });
-
-    socket.on('reload', (rm) => {
-        socket.leave(rm);
-        let indx = returnRoom(rm)
-        startGame(rm)
+    
+    socket.on('reload', () => {
+        socket.leave("some room");
+        Player.Player1 = null
+        Player.Player2 = null
         socket.emit('redirect', '/');
+        console.log(Player)
     });
 });
 

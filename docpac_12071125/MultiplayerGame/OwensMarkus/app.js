@@ -12,9 +12,9 @@ const io = new Server(server);
 //constants 
 const PORT=process.env.PORT || 3000;
 const SESSION_SECRET=process.env.SESSION_SECRET || "massacre";
-const AUTH_URL=process.env.AUTH_URL || "https://formbeta.yorktechapps.com";
-const THIS_URL=process.env.THIS_URL || "http://localhost:3000/login";
-const API_KEY = process.env.API_KEY || "53519948f6e68b05134e406a6b21cee4970c41f940d77c11ec24c28dc29441b5";
+const AUTH_URL=process.env.AUTH_URL || "https://localhost:420/oauth";
+const THIS_URL=process.env.THIS_URL || "http://localhost:${PORT}";
+const API_KEY = process.env.API_KEY || "12345";
 const sqlite3 = require('sqlite3').verbose();   
 const SQLiteStore = require('connect-sqlite3')(session);
 //database setup

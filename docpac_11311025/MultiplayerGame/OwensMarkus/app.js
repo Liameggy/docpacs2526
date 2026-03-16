@@ -12,8 +12,8 @@ const io = new Server(server);
 //constants 
 const PORT=process.env.PORT || 3000;
 const SESSION_SECRET=process.env.SESSION_SECRET || "massacre";
-const AUTH_URL=process.env.AUTH_URL || "https://formbeta.yorktechapps.com";
-const THIS_URL=process.env.THIS_URL || `http://172.16.3.240:${PORT}`;
+const AUTH_URL=process.env.AUTH_URL || "https://localhost:420/oauth";
+const THIS_URL=process.env.THIS_URL || "http://localhost:${PORT}";
 const API_KEY = process.env.API_KEY || "12345";
 const sqlite3 = require('sqlite3').verbose();   
 const SQLiteStore = require('connect-sqlite3')(session);

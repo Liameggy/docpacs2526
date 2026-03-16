@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spellbar</title>
+    <style>
+        body {
+            background-color: black;
+            color: rgb(255, 255, 255);
+        }
+
+        #content {
+            display: flex;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #spells {
+            min-height: 200px;
+            height: fit-content;
+            padding-left: 10px;
+            padding-right: 50px;
+            border-left: 2px solid rgb(255, 255, 255);
+            border-top: 2px solid rgb(255, 255, 255);
+            border-bottom: 2px solid rgb(255, 255, 255);
+        }
+
+        #health {
+            height: 200px;
+            padding-left: 50px;
+            padding-right: 50px;
+            border-top: 2px solid rgb(255, 255, 255);
+            border-bottom: 2px solid rgb(255, 255, 255);
+            border-left: 2px solid rgb(255, 255, 255);
+            border-right: 2px solid rgb(255, 255, 255);
+        }
+
+        #turn {
+            height: 200px;
+            padding-left: 50px;
+            padding-right: 50px;
+            border-right: 2px solid rgb(255, 255, 255);
+            border-top: 2px solid rgb(255, 255, 255);
+            border-bottom: 2px solid rgb(255, 255, 255);
+        }
+
+        button {
+            width: auto;
+            height: auto;
+        }
+
+        #extraInfo {
+            display: flex;
+            position: absolute;
+            left: 90%;
+            transform: translate(117px, 0px);
+            transition: ease-in-out 0.5s;
+        }
+
+        #extraInfo:hover {
+            display: flex;
+            transform: translate(-100px, 0px);
+        }
+
+        #hoverButton {
+            padding: 20px;
+            height: 35px;
+            border-top: 2px solid rgb(255, 255, 255);
+            border-left: 2px solid rgb(255, 255, 255);
+            border-bottom: 2px solid rgb(255, 255, 255);
+        }
+
+        #extraInfoDisplay {
+            padding: 5px;
+            padding-left: 30px;
+            padding-bottom: 40px;
+            padding-right: 15px;
+            border-top: 2px solid rgb(255, 255, 255);
+            border-left: 2px solid rgb(255, 255, 255);
+            border-bottom: 2px solid rgb(255, 255, 255);
+        }
+
+        #fire {
+            color: rgb(255, 136, 0);
+        }
+
+        #water {
+            color: rgb(0, 26, 255);
+        }
+
+        #lightning {
+            color: rgb(0, 177, 201);
+        }
+
+        #earth {
+            color: rgb(134, 83, 42);
+        }
+
+        #air {
+            color: rgb(28, 212, 120);
+        }
+
+        #p1HP {
+            color: red;
+        }
+
+        #p2HP {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <div id="spells">
+            <h1>Spells:</h1>
+            <button id="fire" onclick="castSpell(0)">Fireball</button>
+            <button id="water" onclick="castSpell(1)">Water Jet</button>
+            <button id="lightning" onclick="castSpell(2)">Lightning Bolt</button>
+            <button id="earth" onclick="castSpell(3)">Earth Strike</button>
+            <button id="air" onclick="castSpell(4)">Wind Blade</button>
+            <!--
+            <button onclick="castSpell(4)">Acid Splash</button>
+            <button onclick="castSpell(5)">Shadow Bolt</button>
+            <button onclick="castSpell(6)">Sunlight</button>
+            add spell that is strong against light but weak to air
+            -->
+        </div>
+        <div id="health">
+            <h1>HP:</h1>
+            <div id="p1HP">Player 1 HP: 100</div>
+            <div id="p2HP">Connect Player 2</div>
+        </div>
+        <div id="turn">
+            <h1>Turn:</h1>
+            <div id="player">Player 1</div>
+        </div>
+        <div id="extraInfo">
+            <div id="hoverButton">Spell Info</div>
+            <div id="extraInfoDisplay">
+                <div id="spellsCast">
+                    <h1>Previous Spell:</h1>
+                    <div id="previousSpell">None</div>
+                </div>
+                <div id="weaknesses">
+                    <h1>Weaknesses:</h1>
+                    <div>Fire to Water</div>
+                    <div>Water to Lightning</div>
+                    <div>Lightning to Earth</div>
+                    <div>Earth to Air</div>
+                    <div>Air to Fire</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const content = document.getElementById("spells");
+    const p1h = document.getElementById("p1HP");
+    const p2h = document.getElementById("p2HP");
+    const turnDisplay = document.getElementById("player");
+    const spell = document.getElementById("previousSpell")
+    var userNum = null
+    var Player = {}
+    var Playable = true
+    var GameStarted = false
+    var displayedPlayer = false
+    var Room = null
+    var tempNum = null
+    var gameComplete = false
+
+    function castSpell(spell) {
+        if (GameStarted == true) {
+            if (Player.turn == userNum) {
+                if (Playable == true) {
+                    socket.emit('spell', spell, Room);
+                }
+            } else {
+                alert("Not Your Turn")
+            }
+        } else {
+            alert("The Game Has Not Started")
+        }
+    };
+
+    socket.on('connected', (num, room) => {
+        if (userNum == null) {
+            userNum = num
+            console.log('connected')
+        }
+        if (Room == null) {
+            Room = room
+        }
+        if (num == 1) {
+            p1h.innerText = "Player 1 HP: 100"
+            p2h.innerText = "Connect Player 2"
+        } else if (num == 2) {
+            GameStarted = true
+            p1h.innerText = "Player 1 HP: 100"
+            p2h.innerText = "Player 2 HP: 100"
+        }
+    });
+
+    socket.on("playerJoined", (msg) => {
+        Player = msg
+        if ((userNum == 1) && (displayedPlayer == false)) {
+            alert("You are Player 1")
+            displayedPlayer = true
+        } else if ((userNum == 2) && (displayedPlayer == false)) {
+            alert("You are Player 2")
+            displayedPlayer == true
+        } else if (displayedPlayer == false) {
+            alert("Game Full")
+            displayedPlayer = true
+        }
+        if (Player.turn == 1) {
+            turnDisplay.innerText = "Player 1"
+        } else if (Player.turn == 2) {
+            turnDisplay.innerText = "Player 2"
+        }
+    });
+
+    socket.on('playable', () => {
+        console.log('playable')
+    });
+
+    socket.on('gameUpdate', (msg) => {
+        Player = msg
+        p1h.innerText = "Player 1 HP: " + Player.Player1Health
+        p2h.innerText = "Player 2 HP: " + Player.Player2Health
+        if (Player.turn == 1) {
+            turnDisplay.innerText = "Player 1"
+        } else if (Player.turn == 2) {
+            turnDisplay.innerText = "Player 2"
+        }
+        if (Player.roundState == "over") {
+            if (userNum == 1) {
+                if (Player.Player2Spell == null) {
+                    spell.innerText = "None"
+                } else {
+                    spell.innerText = Player.Player2Spell
+                }
+            } else if (userNum == 2) {
+                if (Player.Player1Spell == null) {
+                    spell.innerText = "None"
+                } else {
+                    spell.innerText = Player.Player1Spell
+                }
+            }
+        };
+        if ((Player.Player1Health <= 0) && (Player.Player2Health <= 0)) {
+            gameComplete = true
+            Playable = false
+            alert("TIE!")
+            socket.emit('reload', Room)
+        } else if (Player.Player1Health <= 0) {
+            gameComplete = true
+            Playable = false
+            if (userNum == 1) {
+                alert("You Lose!")
+                socket.emit('reload', Room)
+            } else if (userNum == 2) {
+                alert("YOU WIN! CONGRATULATIONS!")
+                socket.emit('reload', Room)
+            }
+        } else if (Player.Player2Health <= 0) {
+            gameComplete = true
+            Playable = false
+            if (userNum == 2) {
+                alert("You Lose!")
+                socket.emit('reload', Room)
+            } else if (userNum == 1) {
+                alert("YOU WIN! CONGRATULATIONS!")
+                socket.emit('reload', Room)
+            }
+        }
+    });
+
+    socket.on('opponent left', () => {
+        if (!gameComplete) {
+            alert("Opponent Left")
+            socket.emit('reload', Room)
+        }
+    })
+
+    socket.on('redirect', (url) => {
+        window.location.href = url
+    })
+</script>
+
+</html>

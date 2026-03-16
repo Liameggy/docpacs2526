@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        #gameArea {
+            display: flex;
+            gap: 20px;
+        }
+        #scoreBoard {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #chatContainer {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #chatArea {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        #inputArea {
+            display: flex;
+            gap: 10px;
+        }
+        #chatInput {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #sendChat {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #directionBox {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            transition: background-color 0.1s;
+        }
+        .chat-message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .chat-message.mine {
+            background-color: #e3f2fd;
+            text-align: right;
+        }
+        .chat-message.other {
+            background-color: #f5f5f5;
+        }
+        #currentTurn {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .player-score {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="scoreBoard">
+            <h2>Button Masher Game</h2>
+            <div id="playerCount">Players Connected: 0/2</div>
+            <div id="player1Score" class="player-score">Player 1: 0</div>
+            <div id="player2Score" class="player-score">Player 2: 0</div>
+            <div id="timer">Time Left: 20</div>
+            <div id="currentTurn">Waiting for players...</div>
+            <div id="directionBox"></div>
+        </div>
+        <div id="chatContainer">
+            <h2>Game Chat</h2>
+            <div id="chatArea"></div>
+            <div id="inputArea">
+                <input type="text" id="chatInput" placeholder="Type your message here...">
+                <button id="sendChat">Send</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    alert("NOTE: Multiplayer mode is still in development. Features may be incomplete or buggy.");
+    alert("Welcome to Multiplayer Button Masher V2!");
+    // Game state variables
+    var player1Score = 0;
+    var player2Score = 0;
+    var timer = 20;
+    var direction = 0;
+    let timerInterval = null;
+    let directionInterval = null;
+    
+    let gameStarted = false;
+    let turnCount = 0;
+
+    function startTurn() {
+        console.log("Starting turn for", username);
+        // Reset timer
+        timer = 20;
+        updateTimerDisplay();
+        
+        // Clear any existing intervals
+        if (timerInterval) clearInterval(timerInterval);
+        if (directionInterval) clearInterval(directionInterval);
+        
+        // Only start the timers if it's my turn
+        if (isMyTurn) {
+            gameStarted = true;
+            // Start timer countdown
+            timerInterval = setInterval(() => {
+                if (timer > 0) {
+                    timer--;
+                    updateTimerDisplay();
+                    if (timer === 0) {
+                        endTurn();
+                    }
+                }
+            }, 1000);
+            
+            // Start direction changes
+            directionInterval = setInterval(() => {
+                direction = Math.floor(Math.random() * 4);
+                const directions = ["UP", "DOWN", "LEFT", "RIGHT"];
+                document.getElementById("directionBox").innerHTML = directions[direction];
+            }, 2000);
+            
+            // Set initial direction
+            direction = Math.floor(Math.random() * 4);
+            const directions = ["UP", "DOWN", "LEFT", "RIGHT"];
+            document.getElementById("directionBox").innerHTML = directions[direction];
+        } else {
+            // If it's not my turn, just show "Waiting..."
+            document.getElementById("directionBox").innerHTML = "Waiting for other player...";
+        }
+    }
+    
+    function endTurn() {
+        console.log("Ending turn for", username);
+        gameStarted = false;
+        turnCount++;
+        
+        // Clear intervals
+        if (timerInterval) clearInterval(timerInterval);
+        if (directionInterval) clearInterval(directionInterval);
+        
+        // Emit end turn event
+        socket.emit('endTurn', {
+            roomId,
+            username,
+            score: isPlayerOne ? player1Score : player2Score,
+            turnCount: turnCount
+        });
+
+        // If both players have had their turn, show final scores
+        if (turnCount >= 2) {
+            setTimeout(() => {
+                alert("Game Over! Final Scores:\nPlayer 1: " + player1Score + "\nPlayer 2: " + player2Score);
+                if (player1Score > player2Score) {
+                    alert("Player 1 wins!");
+                } else if (player2Score > player1Score) {
+                    alert("Player 2 wins!");
+                } else {
+                    alert("It's a tie!");
+                }
+                window.location.href = '/gamemenu';
+            }, 1000);
+        }
+    }
+    
+    function updateTimerDisplay() {
+        document.getElementById("timer").innerHTML = "Time Left: " + timer;
+    }
+    window.addEventListener("gamepadconnected", function(e) {
+        console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+        e.gamepad.index, e.gamepad.id,
+        e.gamepad.buttons.length, e.gamepad.axes.length);
+        setInterval(pollGamepad, 100);
+    });
+    function pollGamepad() {
+        if (!isMyTurn || !gameStarted) return; // Don't process inputs if it's not player's turn or game hasn't started
+        
+        var gamepads = navigator.getGamepads();
+        if (!gamepads) {
+            return;
+        }
+        var gp = gamepads[0];
+        if (timer > 0 && gp) {
+            // Only check for score if A button (button 0) is pressed
+            if (gp.buttons[0].pressed) {
+                // Check if the joystick is pointing in the correct direction
+                if (gp.axes[1] <= -0.5 && direction == 0) { // Up
+                    updateScore();
+                }
+                else if (gp.axes[1] >= 0.5 && direction == 1) { // Down
+                    updateScore();
+                }
+                else if (gp.axes[0] <= -0.5 && direction == 2) { // Left
+                    updateScore();
+                }
+                else if (gp.axes[0] >= 0.5 && direction == 3) { // Right
+                    updateScore();
+                }
+            }
+        }
+        
+        if (gp.buttons[9].pressed) { // Start button
+            window.location.reload();
+        }
+    }
+
+    function updateScore() {
+        if (username === currentPlayer) {
+            // Increment local score
+            if (isPlayerOne) {
+                player1Score++;
+                document.getElementById("player1Score").innerHTML = username + ": " + player1Score;
+            } else {
+                player2Score++;
+                document.getElementById("player2Score").innerHTML = username + ": " + player2Score;
+            }
+            
+            // Emit score update to server
+            socket.emit('scoreUpdate', {
+                roomId,
+                username,
+                score: isPlayerOne ? player1Score : player2Score
+            });
+            
+            // Add a visual feedback
+            const directionBox = document.getElementById("directionBox");
+            directionBox.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                directionBox.style.backgroundColor = "";
+            }, 100);
+        }
+    }
+    
+    // Multiplayer game functionality
+    const socket = io();
+    let isMyTurn = false;
+    let currentPlayer = '';
+    const username = '<%= user %>'; // Get username from EJS
+    const roomId = '<%= roomId %>'; // Get roomId passed from lobby
+
+    // Join game room
+    socket.emit('joinGame', { roomId, username });
+
+    // Handle room updates (player joins/disconnects)
+    socket.on('roomUpdate', (data) => {
+        document.getElementById('playerCount').innerHTML = `Players Connected: ${data.players.length}/2`;
+        document.getElementById('currentTurn').innerHTML = data.players.length < 2 ? 
+            "Waiting for players..." : 
+            "Game ready to start!";
+            
+        // Update player names if available
+        if (data.players[0]) {
+            document.getElementById('player1Score').innerHTML = `${data.players[0]}: 0`;
+        }
+        if (data.players[1]) {
+            document.getElementById('player2Score').innerHTML = `${data.players[1]}: 0`;
+        }
+    });
+
+    // Track if we're player one or two
+    let isPlayerOne = false;
+
+    socket.on('gameStart', (data) => {
+        alert('Game starting! Players: ' + data.players.join(' vs '));
+        currentPlayer = data.currentPlayer;
+        isMyTurn = currentPlayer === username;
+        // Set player position
+        isPlayerOne = data.players[0] === username;
+        updateTurnDisplay();
+        startTurn(); // Initialize first turn
+    });
+
+    socket.on('turnChanged', (data) => {
+        // If both turns are complete, don't start a new turn
+        if (turnCount >= 2) return;
+        
+        currentPlayer = data.nextPlayer;
+        isMyTurn = currentPlayer === username;
+        
+        // Update scores
+        player1Score = data.scores[Object.keys(data.scores)[0]] || 0;
+        player2Score = data.scores[Object.keys(data.scores)[1]] || 0;
+        document.getElementById('player1Score').innerHTML = 'Player 1: ' + player1Score;
+        document.getElementById('player2Score').innerHTML = 'Player 2: ' + player2Score;
+        
+        // Update turn display and start new turn
+        updateTurnDisplay();
+        startTurn();
+    });
+
+    function updateTurnDisplay() {
+        const turnDisplay = document.getElementById('currentTurn');
+        if (isMyTurn) {
+            turnDisplay.innerHTML = "It's your turn!";
+            turnDisplay.style.color = 'green';
+        } else {
+            turnDisplay.innerHTML = "Waiting for opponent's turn...";
+            turnDisplay.style.color = 'red';
+        }
+    }
+
+    // Score update handler
+    function updateScore() {
+        if (isMyTurn) {
+            // Increment local score
+            if (isPlayerOne) {
+                player1Score++;
+                document.getElementById("player1Score").innerHTML = "Player 1: " + player1Score;
+            } else {
+                player2Score++;
+                document.getElementById("player2Score").innerHTML = "Player 2: " + player2Score;
+            }
+            
+            // Emit score update to server
+            socket.emit('scoreUpdate', {
+                roomId,
+                username,
+                score: isPlayerOne ? player1Score : player2Score
+            });
+            
+            // Add visual feedback
+            const directionBox = document.getElementById("directionBox");
+            directionBox.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                directionBox.style.backgroundColor = "";
+            }, 100);
+        }
+    }
+
+    // if someone disconnects
+    socket.on('playerDisconnected', (data) => {
+        alert(`${data.username} has disconnected from the game.`);
+        window.location.href = '/gamemenu';
+    });
+    // if the game ends
+    socket.on('gameEnded', (data) => {
+        alert('The game has ended. Returning to game menu.');
+        window.location.href = '/gamemenu';
+    });
+
+    // Chat functionality
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChat');
+    const chatArea = document.getElementById('chatArea');
+
+    function addChatMessage(message, isMine) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isMine ? 'mine' : 'other'}`;
+        messageDiv.textContent = message;
+        chatArea.appendChild(messageDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    sendChatBtn.addEventListener('click', () => {
+        const message = chatInput.value.trim();
+        if (message) {
+            socket.emit('chatMessage', {
+                roomId,
+                username,
+                message
+            });
+            chatInput.value = '';
+        }
+    });
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatBtn.click();
+        }
+    });
+
+    socket.on('chatMessage', (data) => {
+        const isMine = data.username === username;
+        const message = `${data.username}: ${data.message}`;
+        addChatMessage(message, isMine);
+    });
+
+    // Handle score updates
+    socket.on('scoresUpdated', (data) => {
+        const scores = data.scores;
+        const players = Object.keys(scores);
+        document.getElementById('player1Score').innerHTML = 'Player 1: ' + scores[players[0]];
+        document.getElementById('player2Score').innerHTML = 'Player 2: ' + scores[players[1]];
+    });
+
+
+</script>
+</html>

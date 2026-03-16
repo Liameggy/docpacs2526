@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rock Paper Scissors</title>
+</head>
+<body>
+  <h1>Hey, <%= user %>!</h1>
+  <p id="status">Connecting</p>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3defa;
+      text-align: center;
+      padding: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #20082e;
+      color: white;
+    }
+
+  </style>
+  <div>
+    <button onclick="sendMove('rock')">Rock</button>
+    <button onclick="sendMove('paper')">Paper</button>
+    <button onclick="sendMove('scissors')">Scissors</button>
+  </div>
+
+  <h3 id="result"></h3>
+
+  <script>
+    const username = "<%- user %>";
+    const socket = new WebSocket(`ws://${window.location.host}`);
+
+    // connected
+    socket.onopen = () => {
+      document.getElementById("status").textContent = "connected! waiting for player";
+      console.log("connected to server");
+    };
+    socket.onopen = () => {
+  document.getElementById("status").textContent = "Connected! Waiting for player";
+  console.log("connected to server");
+
+  // send username to the server
+  socket.send(JSON.stringify({ type: "setName", name: username }));
+};
+
+
+    // handle incoming messages
+    socket.onmessage = (event) => {
+      console.log("message received:", event.data);
+      const data = JSON.parse(event.data);
+
+      if (data.type === "message") {
+        document.getElementById("status").textContent = data.text;
+      } 
+      else if (data.type === "result") {
+        const resultText = `You played ${data.yourMove}, ${data.oppName} played ${data.oppMove}. ` +
+        (data.outcome === "win"
+            ? "you win!"
+            : data.outcome === "lose"
+            ? "you lose!"
+            : "it's a tie!");
+
+        document.getElementById("result").textContent = resultText;
+      }
+    };
+
+    // disconnected
+    socket.onclose = () => {
+      document.getElementById("status").textContent = "server disconnected.";
+    };
+
+    socket.onerror = (error) => {
+    };
+
+    // send player's move
+    function sendMove(move) {
+      if (socket.readyState === WebSocket.OPEN) {
+        console.log("Sending move:", move);
+        socket.send(JSON.stringify({ type: "move", move }));
+        document.getElementById("status").textContent = `You chose ${move}. Waiting for player`;
+      } else {
+        console.log("socket not open");
+      }
+    }
+  </script>
+</body>
+</html>

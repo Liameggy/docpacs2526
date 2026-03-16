@@ -8,21 +8,7 @@
 <body>
   <h1>Hey, <%= user %>!</h1>
   <p id="status">Connecting</p>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3defa;
-      text-align: center;
-      padding: 20px;
-    }
 
-    button {
-      padding: 10px 20px;
-      background-color: #20082e;
-      color: white;
-    }
-
-  </style>
   <div>
     <button onclick="sendMove('rock')">Rock</button>
     <button onclick="sendMove('paper')">Paper</button>
@@ -40,14 +26,6 @@
       document.getElementById("status").textContent = "connected! waiting for player";
       console.log("connected to server");
     };
-    socket.onopen = () => {
-  document.getElementById("status").textContent = "Connected! Waiting for player";
-  console.log("connected to server");
-
-  // send username to the server
-  socket.send(JSON.stringify({ type: "setName", name: username }));
-};
-
 
     // handle incoming messages
     socket.onmessage = (event) => {
@@ -58,8 +36,8 @@
         document.getElementById("status").textContent = data.text;
       } 
       else if (data.type === "result") {
-        const resultText = `You played ${data.yourMove}, ${data.oppName} played ${data.oppMove}. ` +
-        (data.outcome === "win"
+        const resultText = `You played ${data.yourMove}, they played ${data.oppMove}. ` +
+          (data.outcome === "win"
             ? "you win!"
             : data.outcome === "lose"
             ? "you lose!"
